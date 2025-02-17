@@ -1,0 +1,7 @@
+django
+django-allauth
+PyJWT
+cryptography
+djangorestframework
+dotenv
+mysqlclient
