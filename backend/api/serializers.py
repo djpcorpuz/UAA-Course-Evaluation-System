@@ -4,8 +4,8 @@ from .models import StudentsEnrolled, CourseAnswers, Courses, InstructorsOfCours
 class StudentsEnrolledSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentsEnrolled
-        fields = '__all__'
-
+        exclude = ['pk']
+    
 class CourseAnswersSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseAnswers

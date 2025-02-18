@@ -1,11 +1,14 @@
 from django.db import models
+from django.db.models import UniqueConstraint
+
 
 # Create your models here.
 class StudentsEnrolled(models.Model):
     class Meta:
-        db_table = 'students_enrolled' 
- 
-    email_address = models.CharField(max_length=255, primary_key=True)
+        db_table = 'students_enrolled'       
+
+    pk = models.CompositePrimaryKey('email_address', 'crn', 'term')
+    email_address = models.CharField(max_length=255)
     crn = models.IntegerField() # pk
     term = models.IntegerField() # pk
     took_survey = models.BooleanField()
