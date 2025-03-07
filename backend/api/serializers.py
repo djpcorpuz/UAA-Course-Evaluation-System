@@ -14,49 +14,50 @@ class BaseSchema(serializers.ModelSerializer):
             if field in self.fields:
                 self.fields.pop(field)
 
-class StudentsEnrolledSerializer(serializers.ModelSerializer):
+class StudentsEnrolledSerializer(BaseSchema):
     class Meta:
         model = StudentsEnrolled
         exclude = ['pk']
     
 class CourseAnswersSerializer(BaseSchema):
+    # Custom foreign key declarations
     question = serializers.CharField(source='question_id.question', read_only=True)
 
     class Meta:
         model = CourseAnswers
         fields = '__all__'
 
-class CoursesSerializer(serializers.ModelSerializer):
+class CoursesSerializer(BaseSchema):
     class Meta:
         model = Courses
         fields = '__all__'
 
-class InstructorsOfCoursesSerializer(serializers.ModelSerializer):
+class InstructorsOfCoursesSerializer(BaseSchema):
     class Meta:
         model = InstructorsOfCourses
         fields = '__all__'
 
-class InstructorsSerializer(serializers.ModelSerializer):
+class InstructorsSerializer(BaseSchema):
     class Meta:
         model = Instructors
         fields = '__all__'
 
-class DeliveryMethodsSerializer(serializers.ModelSerializer):
+class DeliveryMethodsSerializer(BaseSchema):
     class Meta:
         model = DeliveryMethods
         fields = '__all__'
 
-class SurveySetsSerializer(serializers.ModelSerializer):
+class SurveySetsSerializer(BaseSchema):
     class Meta:
         model = SurveySets
         fields = '__all__'
 
-class SurveyQuestionsSerializer(serializers.ModelSerializer):
+class SurveyQuestionsSerializer(BaseSchema):
     class Meta:
         model = SurveyQuestions
         fields = '__all__'
 
-class QuestionTypesSerializer(serializers.ModelSerializer):
+class QuestionTypesSerializer(BaseSchema):
     class Meta:
         model = QuestionTypes
         fields = '__all__'
