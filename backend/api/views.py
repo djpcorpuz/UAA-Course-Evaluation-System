@@ -1,16 +1,18 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import StudentsEnrolledSerializer, CourseAnswersSerializer
+from .serializers import StudentsEnrolledSerializer, CourseAnswersSerializer, CoursesSerializer
 from rest_framework.permissions import IsAuthenticated
-from .models import StudentsEnrolled, CourseAnswers,SurveyQuestions
+from .models import StudentsEnrolled, CourseAnswers, SurveyQuestions, Courses
 
 
 # Create your views here.
 
-class EnrolledCoursesView(APIView):
-    # permission_classes = [IsAuthenticated]
-    
+##### Student View #####
+
+class StudentEnrolledCourseView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get_queryset(self, user_email):
         """Returns filtered enrolled courses"""
         return StudentsEnrolled.objects.filter(email_address=user_email)
@@ -18,59 +20,39 @@ class EnrolledCoursesView(APIView):
     def get(self, request):
         """Get all courses for the current authenticated user """
         # TODO: Function only available to students
-        # user_email_address = request.user.email
-        user_email_address = "aaron75@alaska.edu" # TODO: Using as a temp email address 
+        user_email_address = request.user.email
         enrolled_courses = self.get_queryset(user_email_address)
         serialized_courses = StudentsEnrolledSerializer(enrolled_courses, many=True)
         return Response(serialized_courses.data)
 
-    def post(self, request):
-        """Add a new enrolled course"""
-        # TODO: Function only available to admins
-        serializer = StudentsEnrolledSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class CourseAnswersView(APIView):
-    # permission_classes = [IsAuthenticated]
+class StudentSurveyQuestionsView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, crn, term):
         """
-        Get courses survey answers
+        Get survey questions.
 
-        Args: 
-            request (dict): Data about course survey answers
-                {
-                    "course": {
-                        "crn": 30399,
-                        "term": 202501
-                    }
-                }
+        Args:
+            request (dict): Default obj.
+            crn (str): The specified course.
+            term (str): The specified year.
         """
-        # TODO: Function only available to faculty
+        # TODO: Function only available to students
 
         try:
-            course_details = request.data.get("course")
-            crn = course_details.get('crn')
-            term = course_details.get('term')
-
-            # Filter query
-            course_answers = CourseAnswers.objects.filter(crn=crn, term=term).select_related('question_id')
-            serialized_course_answers = CourseAnswersSerializer(course_answers, many=True, exclude_attributes=["question_id"])
-        
-            return Response(serialized_course_answers.data)
+            courses = Courses.objects.filter(crn=crn, term=term).select_related("delivery_method_id", "survey_set_id")
+            serializer = CoursesSerializer(courses, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)        
         except Exception as e:
             print({str(e)})
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class StudentSubmitSurveyAnswerView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         """
-        Add student survey answers
+        Add student survey answers.
 
         Args:
             request (dict): Data about course and survey answers
@@ -110,6 +92,40 @@ class CourseAnswersView(APIView):
 
             CourseAnswers.objects.bulk_create(course_answers)
             return Response({"status: success"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print({str(e)})
+            return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+##### Faculty View #####
+
+class FacultyViewAnswersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """
+        Get courses survey answers
+
+        Args: 
+            request (dict): Data about course survey answers
+                {
+                    "course": {
+                        "crn": 30399,
+                        "term": 202501
+                    }
+                }
+        """
+        # TODO: Function only available to faculty
+
+        try:
+            course_details = request.data.get("course")
+            crn = course_details.get('crn')
+            term = course_details.get('term')
+
+            # Filter query
+            course_answers = CourseAnswers.objects.filter(crn=crn, term=term).select_related('question_id')
+            serialized_course_answers = CourseAnswersSerializer(course_answers, many=True, exclude_attributes=["question_id"])
+        
+            return Response(serialized_course_answers.data)
         except Exception as e:
             print({str(e)})
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -27,10 +27,86 @@ class CourseAnswersSerializer(BaseSchema):
         model = CourseAnswers
         fields = '__all__'
 
+class DeliveryMethodsSerializer(BaseSchema):
+    class Meta:
+        model = DeliveryMethods
+        fields = '__all__'
+
+class SurveySetsSerializer(BaseSchema):
+    # Custom field
+    questions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SurveySets
+        fields = '__all__'
+
+    def get_questions(self, obj):
+        """
+        SurveySets table on column question_ids is an array.
+        Retrieves from SurveyQuestions table based on column questions_ids.
+        """
+        question_ids = obj.question_ids
+        questions = SurveyQuestions.objects.filter(question_id__in=question_ids)
+        return SurveyQuestionsSerializer(questions, many=True).data
+
+class QuestionTypesSerializer(BaseSchema):
+    class Meta:
+        model = QuestionTypes
+        fields = '__all__'
+
+class SurveyQuestionsSerializer(BaseSchema):
+    # Custom field
+    question_type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SurveyQuestions
+        fields = '__all__'
+    
+    def get_question_type(self, obj):
+        """ 
+        Retrieve the details of the related QuestionType based on the question_type (option_id) 
+        of the SurveyQuestion.
+        """
+        question_type = obj.question_type
+        question_type_details = QuestionTypes.objects.filter(option_id=question_type).first()
+        if question_type_details:
+            return QuestionTypesSerializer(question_type_details).data
+        return None
+
 class CoursesSerializer(BaseSchema):
+    # Custom foreign key declarations
+    delivery_method_id = DeliveryMethodsSerializer()
+    survey_set_id = SurveySetsSerializer()
+
     class Meta:
         model = Courses
-        fields = '__all__'
+        exclude = ['pk']
+    
+    def to_representation(self, instance):
+        """Pretty the Serialization"""
+        representation = super().to_representation(instance)
+        
+        # Extract the survey questions
+        survey_questions = []
+        for question in representation["survey_set_id"]["questions"]:
+            # Correct the dictionary key formatting
+            question_obj = {
+                "question": question["question"],
+                "values": question["question_type"]["value"]
+            }
+            survey_questions.append(question_obj)
+
+        custom_representation = {
+            'delivery_method': representation['delivery_method_id']['name'],
+            'survey_questions': survey_questions,
+            'crn': representation['crn'],
+            'term': representation['term'],
+            "campus_id": representation["campus_id"],
+            'subject': representation['subject'],
+            'course_number': representation["course_number"],
+            'title': representation["title"]
+        }
+        return custom_representation
 
 class InstructorsOfCoursesSerializer(BaseSchema):
     class Meta:
@@ -40,24 +116,4 @@ class InstructorsOfCoursesSerializer(BaseSchema):
 class InstructorsSerializer(BaseSchema):
     class Meta:
         model = Instructors
-        fields = '__all__'
-
-class DeliveryMethodsSerializer(BaseSchema):
-    class Meta:
-        model = DeliveryMethods
-        fields = '__all__'
-
-class SurveySetsSerializer(BaseSchema):
-    class Meta:
-        model = SurveySets
-        fields = '__all__'
-
-class SurveyQuestionsSerializer(BaseSchema):
-    class Meta:
-        model = SurveyQuestions
-        fields = '__all__'
-
-class QuestionTypesSerializer(BaseSchema):
-    class Meta:
-        model = QuestionTypes
         fields = '__all__'
