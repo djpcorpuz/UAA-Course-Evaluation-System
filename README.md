@@ -13,5 +13,13 @@ DB_PORT=
 run django
 ```
 cd backend
-python3 manage.py run server
-``
+python3 manage.py runserver
+```
+
+reinit migrations
+```
+(delete all migrations files)
+cd backend
+python3 manage.py makemigrations
+```
+
