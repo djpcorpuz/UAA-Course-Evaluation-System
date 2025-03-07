@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import StudentEnrolledCourseView, StudentSurveyQuestionsView, StudentSubmitSurveyAnswerView
-from .views import FacultyViewAnswersView
+from .views import FacultyAvailableCoursesView, FacultyViewAnswersView
 
 urlpatterns = [
     # Student endpoints
@@ -9,7 +9,8 @@ urlpatterns = [
     path('student/submit-course-answers', StudentSubmitSurveyAnswerView.as_view(), name="post-student-course-answers"),
 
     # Faculty endpoints
-    path('faculty/view-answers', FacultyViewAnswersView.as_view(), name='get-faculty-view-answers'),
+    path('faculty/taught-courses', FacultyAvailableCoursesView.as_view(), name='get-faculty-taught-courses'),
+    path('faculty/view-answers', FacultyViewAnswersView.as_view(), name='post-faculty-view-answers'),
 
     # Admin endpoints
 ]

@@ -1,12 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import StudentsEnrolledSerializer, CourseAnswersSerializer, CoursesSerializer
 from rest_framework.permissions import IsAuthenticated
-from .models import StudentsEnrolled, CourseAnswers, SurveyQuestions, Courses
-
-
-# Create your views here.
+from .serializers import StudentsEnrolledSerializer, CourseAnswersSerializer, CoursesSerializer, InstructorsOfCoursesSerializer
+from .models import StudentsEnrolled, CourseAnswers, SurveyQuestions, Courses, InstructorsOfCourses
 
 ##### Student View #####
 
@@ -97,6 +94,41 @@ class StudentSubmitSurveyAnswerView(APIView):
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 ##### Faculty View #####
+
+class FacultyAvailableCoursesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self, user_email):
+        """Returns filtered taught courses"""
+        return InstructorsOfCourses.objects.filter(email_address=user_email)
+
+    def get(self, request):
+        """Get all courses for the current authenticated user """
+        # TODO: Function only available to students
+
+        try:
+            # Get associated courses
+            user_email_address = request.user.email
+            taught_courses = self.get_queryset(user_email_address)
+
+            # Get course details
+            course_detail_list = []
+            for course in taught_courses:
+                crn = course.crn
+                term = course.term
+
+                # Query the Courses table to get course details based on crn and term
+                course_details = Courses.objects.filter(crn=crn, term=term).first()
+
+                if course_details:
+                    # Serialize the course details (assuming you have a serializer for Courses)
+                    course_details_data = CoursesSerializer(course_details).data
+                    course_detail_list.append(course_details_data)
+            
+            return Response({"courses_details": course_detail_list})
+        except Exception as e:
+            print({str(e)})
+            return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FacultyViewAnswersView(APIView):
     permission_classes = [IsAuthenticated]

@@ -111,7 +111,7 @@ class CoursesSerializer(BaseSchema):
 class InstructorsOfCoursesSerializer(BaseSchema):
     class Meta:
         model = InstructorsOfCourses
-        fields = '__all__'
+        exclude = ['pk']
 
 class InstructorsSerializer(BaseSchema):
     class Meta:
