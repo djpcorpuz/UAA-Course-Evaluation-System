@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import StudentsEnrolledSerializer, CourseAnswersSerializer, CoursesSerializer, InstructorsOfCoursesSerializer
-from .models import StudentsEnrolled, CourseAnswers, SurveyQuestions, Courses, InstructorsOfCourses
+from .models import StudentsEnrolled, CourseAnswers, SurveyQuestions, Courses, InstructorsOfCourses, SurveySets
 
 ##### Student View #####
 
@@ -69,8 +69,8 @@ class StudentSubmitSurveyAnswerView(APIView):
         try:
             course_details = request.data.get("course")
             answers_data = request.data.get("answers")
-            crn = course_details.get('crn')
-            term = course_details.get('term')
+            crn = course_details.get("crn")
+            term = course_details.get("term")
 
             # Loop through the data
             course_answers = []
@@ -103,8 +103,8 @@ class FacultyAvailableCoursesView(APIView):
         return InstructorsOfCourses.objects.filter(email_address=user_email)
 
     def get(self, request):
-        """Get all courses for the current authenticated user """
-        # TODO: Function only available to students
+        """Get all courses for the current authenticated user"""
+        # TODO: Function only available to faculty
 
         try:
             # Get associated courses
@@ -150,14 +150,124 @@ class FacultyViewAnswersView(APIView):
 
         try:
             course_details = request.data.get("course")
-            crn = course_details.get('crn')
-            term = course_details.get('term')
+            crn = course_details.get("crn")
+            term = course_details.get("term")
 
             # Filter query
-            course_answers = CourseAnswers.objects.filter(crn=crn, term=term).select_related('question_id')
+            course_answers = CourseAnswers.objects.filter(crn=crn, term=term).select_related("question_id")
             serialized_course_answers = CourseAnswersSerializer(course_answers, many=True, exclude_attributes=["question_id"])
         
             return Response(serialized_course_answers.data)
         except Exception as e:
             print({str(e)})
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class FacultyManageQuestionsView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """
+        All courses get a default list. (Designated by column default is True)
+        A faculty can add additional questions:
+            - Create a new set for the course
+            - Copy the default list into set
+            - Append new questions
+        
+        The faculty shouldn't be able to edit the default list.
+
+        Args:
+            request (dict): Data of course and set changes
+                {
+                    "course": {
+                        "crn": 30399,
+                        "term": 202501
+                    },
+                    "questions": {
+                        "add": [
+                            {
+                                "question": "New question",
+                                "type": 0
+                            }
+                        ],
+                        "update": [
+                            {
+                                "question_id": 4,
+                                "question": "Update question",
+                                "type": 0
+                            }
+                        ],
+                        "remove": []
+                    }
+                }
+        """
+        # TODO: Function only available to faculty
+
+        course_data = request.data.get("course", {})
+        question_changes = request.data.get("questions", {})
+
+        fetched_course_data = Courses.objects.filter(crn=course_data["crn"], term=course_data["term"]).values().first()
+        current_set_id = fetched_course_data["survey_set_id_id"]
+        default_set_obj = SurveySets.objects.filter(default=True).values().first()
+
+        # The current course set_id is the default survey set
+        # Create a new survey set (copy the default survey set)
+        if fetched_course_data["survey_set_id_id"] == default_set_obj["set_id"]:
+            new_survey_set = SurveySets(
+                # set_id is auto generated
+                name = f"{course_data["crn"]}, {course_data["term"]}",
+                question_ids = default_set_obj["question_ids"]
+            )
+            new_survey_set.save()
+            
+            # Update the Course set id to be the newly created survey set id
+            Courses.objects.filter(crn=course_data["crn"], term=course_data["term"]).update(survey_set_id_id=new_survey_set.set_id)
+
+            # Update to allow synchronization till the end of function 
+            current_set_id = new_survey_set.set_id 
+           
+        add_questions = question_changes.get("add", [])
+        update_questions = question_changes.get("update", [])
+        remove_questions = question_changes.get("remove", [])
+
+        # Parse add questions
+        if len(add_questions) > 0:
+            for obj in add_questions:
+                new_survey_question = SurveyQuestions (
+                    # question id auto generated
+                    question = obj["question"],
+                    question_type = obj["type"]
+                )
+                new_survey_question.save()
+
+                # Append new survey question to set
+                survey_set = SurveySets.objects.get(set_id=current_set_id)
+                survey_set.question_ids.append(new_survey_question.question_id)
+                survey_set.save()
+                
+        # Parse update questions
+        if len(update_questions) > 0:
+            for obj in update_questions:
+                survey_question = SurveyQuestions.objects.filter(question_id=obj["question_id"]).first()
+        
+                if survey_question:
+                    survey_question.question = obj["question"]
+                    survey_question.type = obj["type"]
+                    survey_question.save()
+
+        # Parse remove questions
+        if len(remove_questions) > 0:
+            for question_id in remove_questions:
+                # Delete the question from SurveyQuestions table
+                survey_question = SurveyQuestions.objects.filter(question_id=question_id).first()
+                if survey_question:
+                    survey_question.delete()  # Delete the survey question from the database
+
+                # Update the SurveySets table by removing the question_id from the question_ids array
+                survey_set = SurveySets.objects.get(set_id=current_set_id)
+                if survey_set and (question_id in survey_set.question_ids):  
+                    survey_set.question_ids.remove(question_id) # Remove the question_id from the array
+                    survey_set.save()
+
+        updated_survey = Courses.objects.filter(crn=course_data["crn"], term=course_data["term"]).first()
+        updated_survey_serialized = CoursesSerializer(updated_survey).data
+        return Response({"course_detail": updated_survey_serialized}, status=status.HTTP_201_CREATED)  

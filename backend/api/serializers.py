@@ -88,11 +88,11 @@ class CoursesSerializer(BaseSchema):
         
         # Extract the survey questions
         survey_questions = []
-        for question in representation["survey_set_id"]["questions"]:
+        for question in representation['survey_set_id']['questions']:
             # Correct the dictionary key formatting
             question_obj = {
-                "question": question["question"],
-                "values": question["question_type"]["value"]
+                'question': question['question'],
+                'values': question['question_type']['value']
             }
             survey_questions.append(question_obj)
 
@@ -101,10 +101,10 @@ class CoursesSerializer(BaseSchema):
             'survey_questions': survey_questions,
             'crn': representation['crn'],
             'term': representation['term'],
-            "campus_id": representation["campus_id"],
+            "campus_id": representation['campus_id'],
             'subject': representation['subject'],
-            'course_number': representation["course_number"],
-            'title': representation["title"]
+            'course_number': representation['course_number'],
+            'title': representation['title']
         }
         return custom_representation
 
