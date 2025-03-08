@@ -10,12 +10,6 @@ DB_HOST=
 DB_PORT=
 ```
 
-run django
-```
-cd backend
-python3 manage.py runserver
-```
-
 reinit migrations
 ```
 (delete all migrations files)
@@ -23,3 +17,11 @@ cd backend
 python3 manage.py makemigrations
 ```
 
+run django
+```
+cd backend
+python3 -m venv venv
+source myenv/bin/activate
+pip3 install -r requirements.txt
+python3 manage.py runserver
+```

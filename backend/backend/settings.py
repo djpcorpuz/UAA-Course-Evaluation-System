@@ -29,6 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Need configuration when deploying to production!
 ALLOWED_HOSTS = []
 
 # Application definition

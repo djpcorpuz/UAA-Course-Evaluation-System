@@ -163,7 +163,7 @@ class FacultyViewAnswersView(APIView):
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FacultyManageQuestionsView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         """
