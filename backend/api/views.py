@@ -1,6 +1,7 @@
-from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.utils.dateparse import parse_datetime
 from rest_framework.permissions import IsAuthenticated
 from .serializers import StudentsEnrolledSerializer, CourseAnswersSerializer, CoursesSerializer, InstructorsOfCoursesSerializer
 from .models import StudentsEnrolled, CourseAnswers, SurveyQuestions, Courses, InstructorsOfCourses, SurveySets
@@ -163,7 +164,7 @@ class FacultyViewAnswersView(APIView):
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FacultyManageQuestionsView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         """
@@ -271,3 +272,86 @@ class FacultyManageQuestionsView(APIView):
         updated_survey = Courses.objects.filter(crn=course_data["crn"], term=course_data["term"]).first()
         updated_survey_serialized = CoursesSerializer(updated_survey).data
         return Response({"course_detail": updated_survey_serialized}, status=status.HTTP_201_CREATED)  
+
+##### Admin View #####
+
+class AdminCreateCoursesView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """
+        Fetch all the courses
+        """
+        # TODO: Function only available to admin
+        courses = Courses.objects.all() # TODO: Update to allow for filters and pagination
+        serialized_courses = CoursesSerializer(courses, many=True)
+        return Response(serialized_courses.data, status=status.HTTP_200_OK)
+
+    # def post(self, request):
+    #     # Bulk append courses
+    #     pass
+
+class AdminManageSurvey(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """
+        Set all courses lock edit questions. (Type: lock-questions)
+        Set allowed times to complete survey. (Type: survey-start)
+
+        Args:
+            request (dict): Data of course and type of action
+            e.g
+                {
+                    "course": {
+                        "term": 202501
+                    },
+                    "type": "lock-questions",
+                    "lock-by": "2025-03-14T07:00:00+00:00"
+                }
+        """
+        # TODO: Function only available to admin
+        type = request.data.get("type", None)
+        course = request.data.get("course", {})
+
+        if type == "lock-questions":
+            term = course.get("term")
+            lock_by = request.data.get("lock-by")
+
+            if term is None or lock_by is None:
+                return Response({"error": "Missing required fields."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                dt_lock_by = parse_datetime(lock_by)
+                updated = Courses.objects.filter(term=term).update(edit_lock_by=dt_lock_by)
+                if updated:
+                    return Response({"message": "Course questions locked successfully"}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        if type == "survey-start":
+            term = course.get("term")
+            start_by = request.data.get("survey-start")
+            end_by = request.data.get("survey-end")
+
+            if start_by is None or end_by is None:
+                return Response({"error": "Missing required fields."}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                dt_start_by = parse_datetime(start_by)
+                dt_end_by = parse_datetime(end_by)
+
+                # Validate that start is before end
+                if dt_start_by >= dt_end_by:
+                    return Response({"error": "Start date needs to before end date"}, status=status.HTTP_400_BAD_REQUEST)
+
+                updated = Courses.objects.filter(term=term).update(survey_start=dt_start_by, survey_end=dt_end_by)
+                if updated:
+                    return Response({"message": "Course survey start and end time set successfully"}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"error": "Invalid or missing 'type' field."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        
