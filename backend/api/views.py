@@ -163,7 +163,7 @@ class FacultyViewAnswersView(APIView):
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FacultyManageQuestionsView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         """
@@ -271,3 +271,21 @@ class FacultyManageQuestionsView(APIView):
         updated_survey = Courses.objects.filter(crn=course_data["crn"], term=course_data["term"]).first()
         updated_survey_serialized = CoursesSerializer(updated_survey).data
         return Response({"course_detail": updated_survey_serialized}, status=status.HTTP_201_CREATED)  
+
+##### Admin View #####
+
+class AdminCreateCoursesView(APIView):
+    # permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """
+        Fetch all the courses
+        """
+        # TODO: Function only available to admin
+        courses = Courses.objects.all() # TODO: Update to allow for filters and pagination
+        serialized_courses = CoursesSerializer(courses, many=True)
+        return Response(serialized_courses.data, status=status.HTTP_200_OK)
+
+    # def post(self, request):
+    #     # Bulk append courses
+    #     pass
