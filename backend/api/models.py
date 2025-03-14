@@ -66,9 +66,9 @@ class Courses(models.Model):
     title = models.CharField(max_length=255)
     delivery_method_id = models.ForeignKey(DeliveryMethods, on_delete=models.PROTECT, db_column='delivery_method_id')
     survey_set_id = models.ForeignKey(SurveySets, on_delete=models.PROTECT, db_column='survey_set_id')
-    edit_lock_by = models.IntegerField(null=True, blank=True)
-    survey_start = models.CharField(max_length=255, null=True, blank=True) 
-    survey_end = models.CharField(max_length=255, null=True, blank=True)
+    edit_lock_by = models.DateTimeField(null=True, blank=True)
+    survey_start = models.DateTimeField(null=True, blank=True)
+    survey_end = models.DateTimeField(null=True, blank=True)
 
 class InstructorsOfCourses(models.Model):
     class Meta:
