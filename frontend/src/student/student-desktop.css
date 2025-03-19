@@ -1,29 +1,27 @@
-* {
-  box-sizing: border-box;
-}
-
+/* Prevent scrolling on the main page */
 body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
   background-color: #14573e;
+  overflow: hidden; /* removes scrolling from the entire page */
 }
 
-/* Container fixed to 1080p resolution */
 .student-container {
+  /* container fills the full viewport so there's no page scroll */
   margin: 0 auto;
-  width: 1920px;
-  height: 1080px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .student-desktop-wrapper {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: flex-start;
+  flex: 1;
 }
-
-
-/* Left column + containers --------------------------------------*/
 
 .left-column {
   display: flex;
@@ -33,20 +31,19 @@ body {
 }
 
 .left-panel {
-  width: 400px;
+  width: 350px;
   height: 650px;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 1rem;
-  margin-right: 20px;
   margin-left: 20px;
   margin-top: 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  text-align: center; 
+  text-align: center;
   color: #000;
   font-size: 20px;
   font-weight: bold;
@@ -54,43 +51,11 @@ body {
   padding: 0rem 1rem 1rem 1rem;
 }
 
-/* Top section */
-.top-section {
-  margin-top: 0;
-  padding-top: 0;
-}
-
-/* Bottom section */
-.bottom-section {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 0.5rem;
-}
-
-/* Course links */
-.course {
-  margin: 0;
-  cursor: pointer;
-  color: #fc9432;
-  text-decoration: underline;
-}
-
-.logout-button {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-
-
-/* Right column + containers --------------------------------------*/
-
 .right-panel {
   flex: 1;
   text-align: left;
   color: #fff;
+  height: 100%;
 }
 
 .class-panel {
@@ -98,14 +63,16 @@ body {
   color: #000;
   padding: 1rem;
   border-radius: 8px;
-  width: 90%;
-  height: 800px;
+  width: 99%;
   margin-top: 10px;
   position: relative;
   text-align: center;
+  height: calc(99% - 10px);
+  overflow-y: auto;
 }
 
-.class-panel h2, .class-panel p {
+.class-panel h2,
+.class-panel p {
   margin: 0rem 0;
 }
 
@@ -116,4 +83,62 @@ body {
   font-size: 1.5rem;
   font-weight: bold;
   cursor: pointer;
+}
+
+.question-box {
+  background-color: rgb(245, 245, 245);
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+  color: #000;
+  text-align: left;
+}
+
+.answer-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  margin-left: 30px;
+}
+
+.answer-options label {
+  margin: 0 1px;
+}
+
+.course {
+  margin: 0;
+  cursor: pointer;
+  color: #fc9432;
+  text-decoration: underline;
+  background: #ffffff;
+  font-weight: bold;
+  margin-bottom: 1px;
+}
+
+.courses-header {
+  font-size: 24px;
+}
+
+.logout-button {
+  margin-top: 1rem;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Invert radio button colors: unfilled = white with black border, filled = black */
+input[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 1.2em;
+  height: 1.2em;
+  border: 2px solid black;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+}
+
+input[type="radio"]:checked {
+  background-color: black;
 }
