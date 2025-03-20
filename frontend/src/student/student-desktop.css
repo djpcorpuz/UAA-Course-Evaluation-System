@@ -67,7 +67,7 @@ body {
   margin-top: 10px;
   position: relative;
   text-align: center;
-  height: calc(99% - 10px);
+  height: 55%;
   overflow-y: auto;
 }
 

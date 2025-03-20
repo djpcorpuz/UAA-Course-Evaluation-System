@@ -4,9 +4,9 @@ import './student-desktop.css';
 function StudentDesktop({ onLogout }) {
   // Default courses
   const courses = [
-    "CRN 12345, CSCE A100 100, Class 1",
-    "CRN 54321, CSCE A101 100, Class 2",
-    "CRN 77777, CSCE A103 100, Class 3"
+    "CRN 12345, CSCE A101 100, Introduction to Computer Science",
+    "CRN 54321, CSCE A115 100, Introduction to Data Science",
+    "CRN 77777, CSCE A201 100, Computer Programming I"
   ];
 
   // Default user and instructors
