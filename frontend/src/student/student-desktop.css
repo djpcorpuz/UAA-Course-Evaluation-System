@@ -58,7 +58,7 @@ body {
   height: 100%;
 }
 
-.class-panel {
+.survey-panel {
   background-color: #fff;
   color: #000;
   padding: 1rem;
@@ -71,8 +71,8 @@ body {
   overflow-y: auto;
 }
 
-.class-panel h2,
-.class-panel p {
+.survey-panel h2,
+.survey-panel p {
   margin: 0rem 0;
 }
 

@@ -75,7 +75,7 @@ function StudentDesktop({ onLogout }) {
         </div>
         <div className="right-panel">
           {selectedCourseIndex !== null ? (
-            <div className="class-panel">
+            <div className="survey-panel">
               <span className="close-button" onClick={handleClose}>x</span>
               <h2>Course Survey for {courses[selectedCourseIndex]}</h2>
               <p>Instructor: {instructors[selectedCourseIndex]}</p>
