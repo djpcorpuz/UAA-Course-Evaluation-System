@@ -2,30 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import './student-desktop.css';
 
 function StudentDesktop({ onLogout }) {
-  // Default courses
+  // Default courses, instructors, questions, and answer options
   const courses = [
     "CRN 12345, CSCE A101 100, Introduction to Computer Science",
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
     "CRN 77777, CSCE A201 100, Computer Programming I"
   ];
-
-  // Default user and instructors
-  const user = ["John Doe"];
   const instructors = [
     "Bobby Smith",
     "Molly Baker",
     "John Carpenter"
   ];
-
-  // Default survey questions
   const survey_questions = [
     "Course syllabus and procedures (for example, expectations regarding attendance, participation, grading, etc.) were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
     "Course activities (assignments, labs, group work, student presentations, etc.) were conducive to learning the material.",
     "Overall, you are satisfied with the course."
   ];
-
-  // Default answer options
   const answerOptions = [
     "Strongly Disagree",
     "Disagree",
@@ -35,30 +28,38 @@ function StudentDesktop({ onLogout }) {
     "N/A"
   ];
 
-  // State to track which course is selected (null means none is selected)
+  // State for selected course and survey answers
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
+  const [surveyAnswers, setSurveyAnswers] = useState({});
   const surveyPanelRef = useRef(null);
 
-  // Scroll survey panel to top whenever it's opened.
   useEffect(() => {
     if (selectedCourseIndex !== null && surveyPanelRef.current) {
       surveyPanelRef.current.scrollTop = 0;
+      setSurveyAnswers({});
     }
   }, [selectedCourseIndex]);
 
-  // When a course is selected
   const handleClick = (index) => {
     setSelectedCourseIndex(index);
   };
 
-  // Close survey panel (clearing selection)
   const handleClose = () => {
     setSelectedCourseIndex(null);
   };
 
-  // Placeholder submission handler that clears the panel.
+  const handleAnswerChange = (questionIndex, value) => {
+    setSurveyAnswers(prev => ({ ...prev, [questionIndex]: value }));
+  };
+
   const handleSubmit = () => {
+    const allAnswered = survey_questions.every((_, index) => surveyAnswers[index]);
+    if (!allAnswered) {
+      alert("Please answer all questions before submitting.");
+      return;
+    }
     alert("Survey submitted!");
+    setSurveyAnswers({});
     handleClose();
   };
 
@@ -89,7 +90,6 @@ function StudentDesktop({ onLogout }) {
         </div>
         <div className="right-panel">
           {selectedCourseIndex !== null ? (
-            // Remount the survey panel by using a key, so answers are cleared
             <div key={selectedCourseIndex} ref={surveyPanelRef} className="survey-panel">
               <span className="close-button" onClick={handleClose}>x</span>
               <h2>Course Survey for {courses[selectedCourseIndex]}</h2>
@@ -104,6 +104,8 @@ function StudentDesktop({ onLogout }) {
                           type="radio"
                           name={`question-${index}`}
                           value={option}
+                          checked={surveyAnswers[index] === option}
+                          onChange={(e) => handleAnswerChange(index, e.target.value)}
                         />
                         {option}
                       </label>

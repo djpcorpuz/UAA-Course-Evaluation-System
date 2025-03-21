@@ -2,30 +2,23 @@ import React, { useState, useRef, useEffect } from 'react';
 import './student-mobile.css';
 
 function StudentMobile({ onLogout }) {
-  // Default courses
+  //default courses, instructors, questions, and answer options
   const courses = [
     "CRN 12345, CSCE A101 100, Introduction to Computer Science",
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
     "CRN 77777, CSCE A201 100, Computer Programming I"
   ];
-
-  // Default user and instructors
-  const user = ["John Doe"];
   const instructors = [
     "Bobby Smith",
     "Molly Baker",
     "John Carpenter"
   ];
-
-  // Default survey questions
   const survey_questions = [
     "Course syllabus and procedures (for example, expectations regarding attendance, participation, grading, etc.) were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
     "Course activities (assignments, labs, group work, student presentations, etc.) were conducive to learning the material.",
     "Overall, you are satisfied with the course."
   ];
-
-  // Default answer options
   const answerOptions = [
     "Strongly Disagree",
     "Disagree",
@@ -35,31 +28,41 @@ function StudentMobile({ onLogout }) {
     "N/A"
   ];
 
-  // State to track which course is selected
+  //state for selected course and survey answers (object mapping question index to answer)
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
-  // Ref for the survey panel
+  const [surveyAnswers, setSurveyAnswers] = useState({});
   const surveyPanelRef = useRef(null);
 
-  // Whenever a course is selected and the survey panel is rendered,
+  //whenever a survey panel is opened, scroll to the top and clear previous answers
   useEffect(() => {
     if (selectedCourseIndex !== null && surveyPanelRef.current) {
       surveyPanelRef.current.scrollTop = 0;
+      setSurveyAnswers({});
     }
   }, [selectedCourseIndex]);
 
-  // When a course is selected
   const handleClick = (index) => {
     setSelectedCourseIndex(index);
   };
 
-  // To close the survey panel (which unmounts it and clears answers)
   const handleClose = () => {
     setSelectedCourseIndex(null);
   };
 
-  // Handle survey submission (placeholder for submission logic)
+  //update answer for a given question
+  const handleAnswerChange = (questionIndex, value) => {
+    setSurveyAnswers(prev => ({ ...prev, [questionIndex]: value }));
+  };
+
   const handleSubmit = () => {
+    //check if every question has an answer
+    const allAnswered = survey_questions.every((_, index) => surveyAnswers[index]);
+    if (!allAnswered) {
+      alert("Please answer all questions before submitting.");
+      return;
+    }
     alert("Survey submitted!");
+    setSurveyAnswers({});
     handleClose();
   };
 
@@ -99,6 +102,8 @@ function StudentMobile({ onLogout }) {
                         type="radio"
                         name={`question-${index}`}
                         value={option}
+                        checked={surveyAnswers[index] === option}
+                        onChange={(e) => handleAnswerChange(index, e.target.value)}
                       />
                       {option}
                     </label>
