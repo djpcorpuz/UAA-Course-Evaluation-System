@@ -23,3 +23,10 @@ cd backend
 python3 manage.py makemigrations
 ```
 
+run frontend
+```
+npm install
+cd frontend
+npm run dev
+```
+
