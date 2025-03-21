@@ -17,7 +17,7 @@ function StudentDesktop({ onLogout }) {
     "John Carpenter"
   ];
 
-  // Default survey questions (added one more question)
+  // Default survey questions
   const survey_questions = [
     "Course syllabus and procedures (for example, expectations regarding attendance, participation, grading, etc.) were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
@@ -46,6 +46,12 @@ function StudentDesktop({ onLogout }) {
   // Reset selected course to close the panel
   const handleClose = () => {
     setSelectedCourseIndex(null);
+  };
+
+  // Handle survey submission (placeholder for actual submission logic)
+  const handleSubmit = () => {
+    alert("Survey submitted!");
+    handleClose();
   };
 
   return (
@@ -96,6 +102,10 @@ function StudentDesktop({ onLogout }) {
                   </div>
                 </div>
               ))}
+              <div className="survey-buttons">
+                <button onClick={handleClose}>Cancel</button>
+                <button onClick={handleSubmit}>Submit</button>
+              </div>
             </div>
           ) : (
             <>

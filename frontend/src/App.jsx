@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import MediaQuery from 'react-responsive';
 import Login from './login/login.jsx';
 import StudentDesktop from './student/student-desktop.jsx';
+import StudentMobile from './student/student-mobile.jsx';
 import FacultyDesktop from './faculty/faculty-desktop.jsx';
 import AdminDesktop from './admin/admin-desktop.jsx';
 import './index.css';
@@ -19,7 +21,16 @@ function App() {
   if (!role) {
     return <Login onLoginSuccess={handleLoginSuccess} />;
   } else if (role === 'student') {
-    return <StudentDesktop onLogout={handleLogout} />;
+    return (
+      <>
+        <MediaQuery maxWidth={767}>
+          <StudentMobile onLogout={handleLogout} />
+        </MediaQuery>
+        <MediaQuery minWidth={768}>
+          <StudentDesktop onLogout={handleLogout} />
+        </MediaQuery>
+      </>
+    );
   } else if (role === 'faculty') {
     return <FacultyDesktop onLogout={handleLogout} />;
   } else if (role === 'admin') {
