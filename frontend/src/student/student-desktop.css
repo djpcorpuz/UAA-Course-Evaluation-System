@@ -1,4 +1,3 @@
-/* Prevent scrolling on the main page */
 body {
   margin: 0;
   padding: 0;
@@ -8,7 +7,6 @@ body {
 }
 
 .student-container {
-  /* container fills the full viewport so there's no page scroll */
   margin: 0 auto;
   width: 100vw;
   height: 100vh;
@@ -114,6 +112,16 @@ body {
   background: #ffffff;
   font-weight: bold;
   margin-bottom: 1px;
+  transition: color 0.3s ease;
+}
+
+.course.selected-course {
+  background-color: #f9b576;
+  color: #ffffff;
+}
+
+.course:hover {
+  color: #e57c0e;
 }
 
 .courses-header {

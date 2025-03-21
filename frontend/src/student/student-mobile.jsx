@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './student-mobile.css';
 
 function StudentMobile({ onLogout }) {
@@ -35,20 +35,29 @@ function StudentMobile({ onLogout }) {
     "N/A"
   ];
 
-  // State to track the selected course
+  // State to track which course is selected
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
+  // Ref for the survey panel
+  const surveyPanelRef = useRef(null);
+
+  // Whenever a course is selected and the survey panel is rendered,
+  useEffect(() => {
+    if (selectedCourseIndex !== null && surveyPanelRef.current) {
+      surveyPanelRef.current.scrollTop = 0;
+    }
+  }, [selectedCourseIndex]);
 
   // When a course is selected
   const handleClick = (index) => {
     setSelectedCourseIndex(index);
   };
 
-  // To close the survey panel
+  // To close the survey panel (which unmounts it and clears answers)
   const handleClose = () => {
     setSelectedCourseIndex(null);
   };
 
-  // Handle survey submission (placeholder for actual submission logic)
+  // Handle survey submission (placeholder for submission logic)
   const handleSubmit = () => {
     alert("Survey submitted!");
     handleClose();
@@ -63,7 +72,7 @@ function StudentMobile({ onLogout }) {
       <main className="mobile-content">
         {selectedCourseIndex === null ? (
           <div className="mobile-course-list">
-            <h3 className="mobile-courses-header">Courses Enrolled</h3>
+            <h3 className="mobile-courses-header">Courses Enrolled for this Term</h3>
             {courses.map((course, index) => (
               <button
                 key={index}
@@ -75,7 +84,7 @@ function StudentMobile({ onLogout }) {
             ))}
           </div>
         ) : (
-          <div className="mobile-survey-panel">
+          <div key={selectedCourseIndex} ref={surveyPanelRef} className="mobile-survey-panel">
             <span className="mobile-close-button" onClick={handleClose}>x</span>
             <h2>Course Survey for</h2>
             <p className="mobile-course-title">{courses[selectedCourseIndex]}</p>

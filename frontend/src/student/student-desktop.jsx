@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './student-desktop.css';
 
 function StudentDesktop({ onLogout }) {
@@ -35,20 +35,28 @@ function StudentDesktop({ onLogout }) {
     "N/A"
   ];
 
-  // Use state to track which course is selected
+  // State to track which course is selected (null means none is selected)
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
+  const surveyPanelRef = useRef(null);
 
-  // When a course button is clicked, store its index
+  // Scroll survey panel to top whenever it's opened.
+  useEffect(() => {
+    if (selectedCourseIndex !== null && surveyPanelRef.current) {
+      surveyPanelRef.current.scrollTop = 0;
+    }
+  }, [selectedCourseIndex]);
+
+  // When a course is selected
   const handleClick = (index) => {
     setSelectedCourseIndex(index);
   };
 
-  // Reset selected course to close the panel
+  // Close survey panel (clearing selection)
   const handleClose = () => {
     setSelectedCourseIndex(null);
   };
 
-  // Handle survey submission (placeholder for actual submission logic)
+  // Placeholder submission handler that clears the panel.
   const handleSubmit = () => {
     alert("Survey submitted!");
     handleClose();
@@ -67,7 +75,7 @@ function StudentDesktop({ onLogout }) {
               {courses.map((course, index) => (
                 <button
                   key={index}
-                  className="course"
+                  className={`course ${selectedCourseIndex === index ? 'selected-course' : ''}`}
                   onClick={() => handleClick(index)}
                 >
                   {course}
@@ -81,7 +89,8 @@ function StudentDesktop({ onLogout }) {
         </div>
         <div className="right-panel">
           {selectedCourseIndex !== null ? (
-            <div className="survey-panel">
+            // Remount the survey panel by using a key, so answers are cleared
+            <div key={selectedCourseIndex} ref={surveyPanelRef} className="survey-panel">
               <span className="close-button" onClick={handleClose}>x</span>
               <h2>Course Survey for {courses[selectedCourseIndex]}</h2>
               <p>Instructor: {instructors[selectedCourseIndex]}</p>
