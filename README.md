@@ -25,8 +25,8 @@ python3 manage.py makemigrations
 
 run frontend
 ```
-npm install
 cd frontend
+npm install
 npm run dev
 ```
 

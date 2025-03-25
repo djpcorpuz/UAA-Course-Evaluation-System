@@ -8,7 +8,7 @@ function FacultyDesktop({ onLogout }) {
     "CRN 77777, CSCE A201 100, Computer Programming I"
   ];
 
-  //default survey questions for a class.
+  //default survey questions (placeholder))
   const defaultSurveyQuestions = [
     { question: "Course syllabus and procedures were clearly explained at the beginning of the term.", type: "ranking" },
     { question: "The readings, lectures, and other course materials were relevant and useful.", type: "ranking" },
@@ -16,7 +16,7 @@ function FacultyDesktop({ onLogout }) {
     { question: "Overall, you are satisfied with the course.", type: "ranking" }
   ];
 
-  //for the currently selected course, we only need a working copy of its survey questions.
+  //for the currently selected course, we only need a working copy of its survey questions
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [editableQuestions, setEditableQuestions] = useState([]);
 
@@ -55,10 +55,21 @@ function FacultyDesktop({ onLogout }) {
     setEditableQuestions(updated);
   };
 
+  //delete question locally (temporary until integration)
+  const handleDeleteQuestion = (index) => {
+    const updated = editableQuestions.filter((_, i) => i !== index);
+    setEditableQuestions(updated);
+  };
+
+  //add a new blank question to the working copy (temporary until integration)
+  const handleAddQuestion = () => {
+    setEditableQuestions([...editableQuestions, { question: '', type: 'ranking' }]);
+  };
+
   const handleSave = () => {
     const key = getSurveyKey(selectedCourseIndex);
     localStorage.setItem(key, JSON.stringify(editableQuestions));
-    alert("Survey questions updated successfully for this class!");
+    alert("Survey questions updated.");
     handleClose();
   };
 
@@ -94,6 +105,7 @@ function FacultyDesktop({ onLogout }) {
               <h2>Course Survey for {faculty_courses[selectedCourseIndex]}</h2>
               {editableQuestions.map((item, index) => (
                 <div key={index} className="faculty-question-box">
+                  <span className="delete-question-button" onClick={() => handleDeleteQuestion(index)}>x</span>
                   <p>Question {index + 1}:</p>
                   <textarea
                     value={item.question}
@@ -110,6 +122,9 @@ function FacultyDesktop({ onLogout }) {
                   </div>
                 </div>
               ))}
+              <div className="faculty-add-question" onClick={handleAddQuestion}>
+                Add Question
+              </div>
               <div className="faculty-survey-buttons">
                 <button onClick={handleClose}>Cancel</button>
                 <button onClick={handleSave}>Save</button>
