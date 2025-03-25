@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './student-desktop.css';
 
 function StudentDesktop({ onLogout }) {
-  // Default courses and instructors remain unchanged.
+  //default courses and instructors
   const courses = [
     "CRN 12345, CSCE A101 100, Introduction to Computer Science",
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
@@ -14,7 +14,7 @@ function StudentDesktop({ onLogout }) {
     "John Carpenter"
   ];
 
-  // Default survey questions (array of strings) for a course.
+  //default survey questions (placeholder))
   const defaultQuestions = [
     "Course syllabus and procedures were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
@@ -22,21 +22,20 @@ function StudentDesktop({ onLogout }) {
     "Overall, you are satisfied with the course."
   ];
 
-  // State to store the survey questions for the selected course.
+  //state to store the survey questions for the selected course
   const [surveyQuestions, setSurveyQuestions] = useState(defaultQuestions);
 
-  // State for selected course and survey answers.
+  //state for selected course and survey answers
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [surveyAnswers, setSurveyAnswers] = useState({});
   const surveyPanelRef = useRef(null);
 
-  // When a course is selected, load its survey questions from localStorage.
+  //when a course is selected, load its survey questions from localStorage (temporary)
   useEffect(() => {
     if (selectedCourseIndex !== null) {
       const key = `surveyQuestions_${selectedCourseIndex}`;
       const saved = localStorage.getItem(key);
       if (saved) {
-        // saved is expected to be an array of objects with a "question" field.
         const parsed = JSON.parse(saved);
         setSurveyQuestions(parsed.map(item => item.question));
       } else {
@@ -45,7 +44,6 @@ function StudentDesktop({ onLogout }) {
     }
   }, [selectedCourseIndex]);
 
-  // Reset survey answers and scroll position when course selection changes.
   useEffect(() => {
     if (selectedCourseIndex !== null && surveyPanelRef.current) {
       surveyPanelRef.current.scrollTop = 0;

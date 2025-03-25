@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './student-mobile.css';
 
 function StudentMobile({ onLogout }) {
-  //default courses, instructors, questions, and answer options
+  //default courses and instructors
   const courses = [
     "CRN 12345, CSCE A101 100, Introduction to Computer Science",
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
@@ -13,12 +13,15 @@ function StudentMobile({ onLogout }) {
     "Molly Baker",
     "John Carpenter"
   ];
-  const survey_questions = [
+  
+  //default survey questions (placeholder)
+  const defaultSurveyQuestions = [
     "Course syllabus and procedures (for example, expectations regarding attendance, participation, grading, etc.) were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
     "Course activities (assignments, labs, group work, student presentations, etc.) were conducive to learning the material.",
     "Overall, you are satisfied with the course."
   ];
+  
   const answerOptions = [
     "Strongly Disagree",
     "Disagree",
@@ -28,12 +31,43 @@ function StudentMobile({ onLogout }) {
     "N/A"
   ];
 
-  //state for selected course and survey answers (object mapping question index to answer)
+  //state for selected course, survey answers, and survey questions
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [surveyAnswers, setSurveyAnswers] = useState({});
+  const [surveyQuestions, setSurveyQuestions] = useState(defaultSurveyQuestions);
   const surveyPanelRef = useRef(null);
 
-  //whenever a survey panel is opened, scroll to the top and clear previous answers
+  //when a course is selected, load its survey questions from localStorage (temporary)
+  useEffect(() => {
+    if (selectedCourseIndex !== null) {
+      const key = `surveyQuestions_${selectedCourseIndex}`;
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setSurveyQuestions(parsed.map(item => item.question));
+      } else {
+        setSurveyQuestions(defaultSurveyQuestions);
+      }
+    }
+  }, [selectedCourseIndex]);
+
+  //detects storage changes if updated on desktop ()
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (selectedCourseIndex !== null && event.key === `surveyQuestions_${selectedCourseIndex}`) {
+        const saved = localStorage.getItem(event.key);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setSurveyQuestions(parsed.map(item => item.question));
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [selectedCourseIndex]);
+
   useEffect(() => {
     if (selectedCourseIndex !== null && surveyPanelRef.current) {
       surveyPanelRef.current.scrollTop = 0;
@@ -49,14 +83,12 @@ function StudentMobile({ onLogout }) {
     setSelectedCourseIndex(null);
   };
 
-  //update answer for a given question
   const handleAnswerChange = (questionIndex, value) => {
     setSurveyAnswers(prev => ({ ...prev, [questionIndex]: value }));
   };
 
   const handleSubmit = () => {
-    //check if every question has an answer
-    const allAnswered = survey_questions.every((_, index) => surveyAnswers[index]);
+    const allAnswered = surveyQuestions.every((_, index) => surveyAnswers[index]);
     if (!allAnswered) {
       alert("Please answer all questions before submitting.");
       return;
@@ -92,7 +124,7 @@ function StudentMobile({ onLogout }) {
             <h2>Course Survey for</h2>
             <p className="mobile-course-title">{courses[selectedCourseIndex]}</p>
             <p className="mobile-instructor">Instructor: {instructors[selectedCourseIndex]}</p>
-            {survey_questions.map((question, index) => (
+            {surveyQuestions.map((question, index) => (
               <div key={index} className="mobile-question-box">
                 <p>Question {index + 1}: {question}</p>
                 <div className="mobile-answer-options">
