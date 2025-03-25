@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './student-desktop.css';
 
 function StudentDesktop({ onLogout }) {
-  // Default courses, instructors, questions, and answer options
+  // Default courses and instructors remain unchanged.
   const courses = [
     "CRN 12345, CSCE A101 100, Introduction to Computer Science",
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
@@ -13,26 +13,39 @@ function StudentDesktop({ onLogout }) {
     "Molly Baker",
     "John Carpenter"
   ];
-  const survey_questions = [
-    "Course syllabus and procedures (for example, expectations regarding attendance, participation, grading, etc.) were clearly explained at the beginning of the term.",
+
+  // Default survey questions (array of strings) for a course.
+  const defaultQuestions = [
+    "Course syllabus and procedures were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
     "Course activities (assignments, labs, group work, student presentations, etc.) were conducive to learning the material.",
     "Overall, you are satisfied with the course."
   ];
-  const answerOptions = [
-    "Strongly Disagree",
-    "Disagree",
-    "Neutral",
-    "Agree",
-    "Strongly Agree",
-    "N/A"
-  ];
 
-  // State for selected course and survey answers
+  // State to store the survey questions for the selected course.
+  const [surveyQuestions, setSurveyQuestions] = useState(defaultQuestions);
+
+  // State for selected course and survey answers.
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [surveyAnswers, setSurveyAnswers] = useState({});
   const surveyPanelRef = useRef(null);
 
+  // When a course is selected, load its survey questions from localStorage.
+  useEffect(() => {
+    if (selectedCourseIndex !== null) {
+      const key = `surveyQuestions_${selectedCourseIndex}`;
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        // saved is expected to be an array of objects with a "question" field.
+        const parsed = JSON.parse(saved);
+        setSurveyQuestions(parsed.map(item => item.question));
+      } else {
+        setSurveyQuestions(defaultQuestions);
+      }
+    }
+  }, [selectedCourseIndex]);
+
+  // Reset survey answers and scroll position when course selection changes.
   useEffect(() => {
     if (selectedCourseIndex !== null && surveyPanelRef.current) {
       surveyPanelRef.current.scrollTop = 0;
@@ -53,7 +66,7 @@ function StudentDesktop({ onLogout }) {
   };
 
   const handleSubmit = () => {
-    const allAnswered = survey_questions.every((_, index) => surveyAnswers[index]);
+    const allAnswered = surveyQuestions.every((_, index) => surveyAnswers[index]);
     if (!allAnswered) {
       alert("Please answer all questions before submitting.");
       return;
@@ -94,11 +107,11 @@ function StudentDesktop({ onLogout }) {
               <span className="close-button" onClick={handleClose}>x</span>
               <h2>Course Survey for {courses[selectedCourseIndex]}</h2>
               <p>Instructor: {instructors[selectedCourseIndex]}</p>
-              {survey_questions.map((question, index) => (
+              {surveyQuestions.map((question, index) => (
                 <div key={index} className="question-box">
                   <p>Question {index + 1}: {question}</p>
                   <div className="answer-options">
-                    {answerOptions.map((option, optionIndex) => (
+                    {["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree", "N/A"].map((option, optionIndex) => (
                       <label key={optionIndex}>
                         <input
                           type="radio"
@@ -119,10 +132,10 @@ function StudentDesktop({ onLogout }) {
               </div>
             </div>
           ) : (
-            <>
+            <div className="default-panel">
               <h1>Student Desktop</h1>
               <p>Welcome to your dashboard!</p>
-            </>
+            </div>
           )}
         </div>
       </div>

@@ -1,14 +1,162 @@
-* {
-    box-sizing: border-box;
-  }
-  
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
-  
-  .faculty-container {
-    margin: 2rem;
-    text-align: center;
-  }
-  
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #14573e;
+  overflow: hidden;
+}
+
+.faculty-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.faculty-desktop-wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+.faculty-left-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.faculty-left-panel {
+  width: 350px;
+  height: 650px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-left: 20px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  color: #000;
+  font-size: 20px;
+  font-weight: bold;
+  position: relative;
+  padding: 0rem 1rem 1rem 1rem;
+}
+
+.faculty-courses-header {
+  font-size: 24px;
+}
+
+.faculty-course {
+  margin: 0.5rem 0;
+  cursor: pointer;
+  color: #fc9432;
+  text-decoration: underline;
+  background: #ffffff;
+  font-weight: bold;
+  transition: color 0.3s ease;
+  padding: 0.5rem;
+  border: none;
+}
+
+.faculty-selected-course {
+  background-color: #f9b576;
+  color: #ffffff;
+}
+
+.faculty-course:hover {
+  color: #e57c0e;
+}
+
+.faculty-logout-button {
+  margin-top: 1rem;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.faculty-right-panel {
+  flex: 1;
+  text-align: left;
+  color: #fff;
+  height: 100%;
+}
+
+.faculty-default-panel {
+  text-align: center;
+  padding: 2rem;
+}
+
+.faculty-survey-panel {
+  background-color: #fff;
+  color: #000;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 99%;
+  margin-top: 10px;
+  position: relative;
+  text-align: center;
+  height: 45vw;
+  overflow-y: auto;
+}
+
+.faculty-survey-panel h2 {
+  margin: 0;
+}
+
+.faculty-close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.faculty-question-box {
+  background-color: rgb(245, 245, 245);
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.faculty-question-box textarea {
+  width: 100%;
+  min-height: 60px;
+  margin-top: 0.5rem;
+  resize: vertical;
+  background-color: #fff;
+  color: #000;
+}
+
+.faculty-type-selector {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.faculty-type-selector label {
+  margin-right: 0.5rem;
+}
+
+.faculty-survey-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.faculty-survey-buttons button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #14573e;
+  color: #fff;
+}
