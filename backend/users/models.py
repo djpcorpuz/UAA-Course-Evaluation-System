@@ -61,7 +61,7 @@ class RoleSetup:
         system_admin_group.permissions.set(system_admin_permissions)
 
             # Admin 
-        admin_permissions = [set_admin_perm, approve_perm, reject_perm, time_perm, faculty_perm, student_perm, default_perm]
+        admin_permissions = [approve_perm, reject_perm, time_perm, faculty_perm, student_perm, default_perm]
         admin_group.permissions.set(admin_permissions)
 
             # Faculty
