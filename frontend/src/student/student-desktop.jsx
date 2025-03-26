@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './student-desktop.css';
+import { fetchEnrolledCourses } from './api';
 
 function StudentDesktop({ onLogout }) {
   //default courses and instructors
@@ -32,6 +33,11 @@ function StudentDesktop({ onLogout }) {
 
   //when a course is selected, load its survey questions from localStorage (temporary)
   useEffect(() => {
+    // TODO: Example Usage for API
+    fetchEnrolledCourses().then((courses) => {
+      console.log(courses)
+   });
+
     if (selectedCourseIndex !== null) {
       const key = `surveyQuestions_${selectedCourseIndex}`;
       const saved = localStorage.getItem(key);
