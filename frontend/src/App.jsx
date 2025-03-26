@@ -1,35 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import MediaQuery from 'react-responsive';
+import Login from './login/login.jsx';
+import StudentDesktop from './student/student-desktop.jsx';
+import StudentMobile from './student/student-mobile.jsx';
+import FacultyDesktop from './faculty/faculty-desktop.jsx';
+import AdminDesktop from './admin/admin-desktop.jsx';
+import './index.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [role, setRole] = useState(null);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  const handleLoginSuccess = (selectedRole) => {
+    setRole(selectedRole);
+  };
+
+  const handleLogout = () => {
+    setRole(null);
+  };
+
+  if (!role) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  } else if (role === 'student') {
+    return (
+      <>
+        <MediaQuery maxWidth={767}>
+          <StudentMobile onLogout={handleLogout} />
+        </MediaQuery>
+        <MediaQuery minWidth={768}>
+          <StudentDesktop onLogout={handleLogout} />
+        </MediaQuery>
+      </>
+    );
+  } else if (role === 'faculty') {
+    return <FacultyDesktop onLogout={handleLogout} />;
+  } else if (role === 'admin') {
+    return <AdminDesktop onLogout={handleLogout} />;
+  }
 }
 
-export default App
+export default App;
