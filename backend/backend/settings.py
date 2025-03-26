@@ -64,6 +64,7 @@ INSTALLED_APPS = [
 # TODO: Need to update to UAA Server Address
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
 
+SOCIALACCOUNT_LOGIN_ON_GET=True # Instead of the intermediate page, directly send to google auth
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
