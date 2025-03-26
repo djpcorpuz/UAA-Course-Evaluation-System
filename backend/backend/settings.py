@@ -46,8 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'accounts',
-    'django.contrib.auth.models',
+    # https://github.com/djpcorpuz/UAA-Course-Evaluation-System/pull/15 (Issue #2)
+    # 'accounts',
+    # 'django.contrib.auth.models',
 
     'allauth',
     'allauth.account',
