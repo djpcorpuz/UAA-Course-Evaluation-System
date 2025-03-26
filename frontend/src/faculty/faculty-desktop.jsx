@@ -20,8 +20,18 @@ function FacultyDesktop({ onLogout }) {
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [editableQuestions, setEditableQuestions] = useState([]);
 
+  //state for submitted surveys for each course
+  const [submittedSurveys, setSubmittedSurveys] = useState({});
+  //state to track which course's submitted answers panel is open
+  const [openSubmittedAnswersCourse, setOpenSubmittedAnswersCourse] = useState(null);
+  // state to hold the survey questions corresponding to the submissions for the open course
+  const [submissionQuestions, setSubmissionQuestions] = useState([]);
+  // state to track which submission is expanded (object mapping submission index to boolean)
+  const [expandedSubmissions, setExpandedSubmissions] = useState({});
+
   //generate a unique key for localStorage based on the course index (temporary until integration)
   const getSurveyKey = (courseIndex) => `surveyQuestions_${courseIndex}`;
+  const getSubmittedSurveyKey = (courseIndex) => `submittedSurvey_${courseIndex}`;
 
   //when a course is selected, load its survey questions from localStorage or use the default (temporary until integration)
   useEffect(() => {
@@ -32,6 +42,61 @@ function FacultyDesktop({ onLogout }) {
       setEditableQuestions(loadedQuestions);
     }
   }, [selectedCourseIndex]);
+
+  //function to load submitted surveys from localStorage for all courses (temporary until integration)
+  const loadSubmittedSurveys = () => {
+    let surveys = {};
+    faculty_courses.forEach((course, index) => {
+      const key = getSubmittedSurveyKey(index);
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        surveys[index] = JSON.parse(saved);
+      }
+    });
+    setSubmittedSurveys(surveys);
+  };
+
+  //periodically load submitted surveys (simulate updates when a student submits a survey)
+  useEffect(() => {
+    loadSubmittedSurveys();
+    const interval = setInterval(() => {
+      loadSubmittedSurveys();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  //when a course's submitted answers panel is opened, load that course's survey questions
+  //and update expandedSubmissions only for new submissions (preserving user expansion state)
+  useEffect(() => {
+    if (openSubmittedAnswersCourse !== null) {
+      const key = getSurveyKey(openSubmittedAnswersCourse);
+      const saved = localStorage.getItem(key);
+      const questions = saved
+        ? JSON.parse(saved).map(item => item.question)
+        : defaultSurveyQuestions.map(item => item.question);
+      setSubmissionQuestions(questions);
+      if (submittedSurveys[openSubmittedAnswersCourse]) {
+        setExpandedSubmissions(prev => {
+          const current = { ...prev };
+          //default to collapsed state
+          submittedSurveys[openSubmittedAnswersCourse].forEach((_, idx) => {
+            if (current[idx] === undefined) {
+              current[idx] = false;
+            }
+          });
+          Object.keys(current).forEach(key => {
+            if (Number(key) >= submittedSurveys[openSubmittedAnswersCourse].length) {
+              delete current[key];
+            }
+          });
+          return current;
+        });
+      }
+    } else {
+      setSubmissionQuestions([]);
+      setExpandedSubmissions({});
+    }
+  }, [openSubmittedAnswersCourse, submittedSurveys]);
 
   const handleClick = (index) => {
     setSelectedCourseIndex(index);
@@ -71,6 +136,14 @@ function FacultyDesktop({ onLogout }) {
     localStorage.setItem(key, JSON.stringify(editableQuestions));
     alert("Survey questions updated.");
     handleClose();
+  };
+
+  //toggle expansion for a given submission index
+  const toggleSubmission = (submissionIndex) => {
+    setExpandedSubmissions(prev => ({
+      ...prev,
+      [submissionIndex]: !prev[submissionIndex]
+    }));
   };
 
   return (
@@ -131,9 +204,57 @@ function FacultyDesktop({ onLogout }) {
               </div>
             </div>
           ) : (
-            <div className="faculty-default-panel">
-              <h1>Faculty Desktop</h1>
-              <p>Welcome to your dashboard!</p>
+            <div className="faculty-survey-container">
+              {faculty_courses.map((course, index) => (
+                <div key={index}>
+                  <div className="faculty-default-panel">
+                    <h2>{course}</h2>
+                    {submittedSurveys[index] && submittedSurveys[index].length > 0 ? (
+                      <button
+                        className="survey-answers-button"
+                        onClick={() => {
+                          if (openSubmittedAnswersCourse === index) {
+                            setOpenSubmittedAnswersCourse(null);
+                          } else {
+                            setOpenSubmittedAnswersCourse(index);
+                          }
+                        }}
+                        style={
+                          openSubmittedAnswersCourse === index
+                            ? { backgroundColor: '#e57c0e', color: 'black' }
+                            : { backgroundColor: '#14573e', color: '#fff' }
+                        }
+                      >
+                        {openSubmittedAnswersCourse === index ? "Close Panel" : "View Submitted Surveys"}
+                      </button>
+                    ) : null}
+                  </div>
+                  {openSubmittedAnswersCourse === index && submittedSurveys[index] && (
+                    <div className="submitted-answers-panel">
+                      <h3>Submissions for {course}</h3>
+                      <div className="submitted-answers-scroll">
+                        {submittedSurveys[index].map((submission, i) => (
+                          <div key={i}>
+                            <p className="submission-header" onClick={() => toggleSubmission(i)}>
+                              Submission {i + 1}
+                            </p>
+                            {expandedSubmissions[i] && (
+                              <div className="submission-details">
+                                {submission.map((answer, j) => (
+                                  <div key={j}>
+                                    <p className="submission-question">Question {j + 1}: {submissionQuestions[j]}</p>
+                                    <p className="submission-answer">Answer: {answer}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>

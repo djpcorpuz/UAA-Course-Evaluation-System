@@ -69,6 +69,14 @@ function StudentDesktop({ onLogout }) {
       alert("Please answer all questions before submitting.");
       return;
     }
+    //save the submission for this course in localStorage (temporary until integration)
+    const submission = surveyQuestions.map((q, index) => surveyAnswers[index]);
+    const key = `submittedSurvey_${selectedCourseIndex}`;
+    let submissions = localStorage.getItem(key);
+    submissions = submissions ? JSON.parse(submissions) : [];
+    submissions.push(submission);
+    localStorage.setItem(key, JSON.stringify(submissions));
+    
     alert("Survey submitted!");
     setSurveyAnswers({});
     handleClose();
@@ -102,31 +110,34 @@ function StudentDesktop({ onLogout }) {
         <div className="right-panel">
           {selectedCourseIndex !== null ? (
             <div key={selectedCourseIndex} ref={surveyPanelRef} className="survey-panel">
-              <span className="close-button" onClick={handleClose}>x</span>
-              <h2>Course Survey for {courses[selectedCourseIndex]}</h2>
-              <p>Instructor: {instructors[selectedCourseIndex]}</p>
-              {surveyQuestions.map((question, index) => (
-                <div key={index} className="question-box">
-                  <p>Question {index + 1}: {question}</p>
-                  <div className="answer-options">
-                    {["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree", "N/A"].map((option, optionIndex) => (
-                      <label key={optionIndex}>
-                        <input
-                          type="radio"
-                          name={`question-${index}`}
-                          value={option}
-                          checked={surveyAnswers[index] === option}
-                          onChange={(e) => handleAnswerChange(index, e.target.value)}
-                        />
-                        {option}
-                      </label>
-                    ))}
+              <div className="student-survey-header">
+                <h2>Course Survey for {courses[selectedCourseIndex]}</h2>
+                <p>Instructor: {instructors[selectedCourseIndex]}</p>
+              </div>
+              <div className="student-survey-content">
+                {surveyQuestions.map((question, index) => (
+                  <div key={index} className="question-box">
+                    <p>Question {index + 1}: {question}</p>
+                    <div className="answer-options">
+                      {["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree", "N/A"].map((option, optionIndex) => (
+                        <label key={optionIndex}>
+                          <input
+                            type="radio"
+                            name={`question-${index}`}
+                            value={option}
+                            checked={surveyAnswers[index] === option}
+                            onChange={(e) => handleAnswerChange(index, e.target.value)}
+                          />
+                          {option}
+                        </label>
+                      ))}
+                    </div>
                   </div>
+                ))}
+                <div className="survey-buttons">
+                  <button onClick={handleClose}>Cancel</button>
+                  <button onClick={handleSubmit}>Submit</button>
                 </div>
-              ))}
-              <div className="survey-buttons">
-                <button onClick={handleClose}>Cancel</button>
-                <button onClick={handleSubmit}>Submit</button>
               </div>
             </div>
           ) : (

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './student-mobile.css';
 
 function StudentMobile({ onLogout }) {
-  //default courses and instructors
+  //default courses and instructors (placeholder)
   const courses = [
     "CRN 12345, CSCE A101 100, Introduction to Computer Science",
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
@@ -37,7 +37,7 @@ function StudentMobile({ onLogout }) {
   const [surveyQuestions, setSurveyQuestions] = useState(defaultSurveyQuestions);
   const surveyPanelRef = useRef(null);
 
-  //when a course is selected, load its survey questions from localStorage (temporary)
+  //when a course is selected, load its survey questions from localStorage (temporary until integration)
   useEffect(() => {
     if (selectedCourseIndex !== null) {
       const key = `surveyQuestions_${selectedCourseIndex}`;
@@ -93,6 +93,14 @@ function StudentMobile({ onLogout }) {
       alert("Please answer all questions before submitting.");
       return;
     }
+    //save the submission for this course in localStorage (temporary until integration)
+    const submission = surveyQuestions.map((q, index) => surveyAnswers[index]);
+    const key = `submittedSurvey_${selectedCourseIndex}`;
+    let submissions = localStorage.getItem(key);
+    submissions = submissions ? JSON.parse(submissions) : [];
+    submissions.push(submission);
+    localStorage.setItem(key, JSON.stringify(submissions));
+    
     alert("Survey submitted!");
     setSurveyAnswers({});
     handleClose();
