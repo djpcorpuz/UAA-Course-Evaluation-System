@@ -56,9 +56,13 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     'rest_framework',
+    'corsheaders',
     'api',
     'users'
 ]
+
+# TODO: Need to update to UAA Server Address
+CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -73,6 +77,7 @@ SOCIALACCOUNT_PROVIDERS = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
