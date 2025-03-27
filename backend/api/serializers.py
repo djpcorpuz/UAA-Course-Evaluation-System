@@ -14,10 +14,26 @@ class BaseSchema(serializers.ModelSerializer):
             if field in self.fields:
                 self.fields.pop(field)
 
-class StudentsEnrolledSerializer(BaseSchema):
+class StudentsEnrolledSerializer(BaseSchema):    
     class Meta:
         model = StudentsEnrolled
         exclude = ['pk']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.pop("email_address")
+        try:
+            course = Courses.objects.get(crn=instance.crn, term=instance.term)
+            course_data = {
+                "subject": course.subject,
+                "course_number": course.course_number,
+                "title": course.title
+            }
+            data.update(course_data)
+        except Courses.DoesNotExist:
+            data.update({"error": "Course doesn't exist"})
+
+        return data
     
 class CourseAnswersSerializer(BaseSchema):
     # Custom foreign key declarations
