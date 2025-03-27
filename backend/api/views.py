@@ -79,6 +79,9 @@ class StudentSubmitSurveyAnswerView(APIView):
 
         # Verify that student is enrolled in the course
         try:
+            course_details = request.data.get("course")
+            crn = course_details.get("crn")
+            term = course_details.get("term")
             user_email_address = request.user.email
             student_is_enrolled = StudentsEnrolled.objects.filter(email_address=user_email_address, crn=crn, term=term).exists()
             if student_is_enrolled is False:
@@ -168,6 +171,19 @@ class FacultyViewAnswersView(APIView):
                 }
         """
         # TODO: Function only available to faculty
+
+        # Verify that faculty is teaching the course
+        try:
+            course_details = request.data.get("course")
+            crn = course_details.get("crn")
+            term = course_details.get("term")
+            user_email_address = request.user.email
+            faculty_is_teaching = InstructorsOfCourses.objects.filter(email_address=user_email_address, crn=crn, term=term).exists()
+            if faculty_is_teaching is False:
+                return Response({"status": "error", "message": f"Not teaching in course: crn={crn},  term={term}"}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            print({str(e)})
+            return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         try:
             course_details = request.data.get("course")
