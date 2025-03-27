@@ -37,6 +37,16 @@ class StudentSurveyQuestionsView(APIView):
         """
         # TODO: Function only available to students
 
+        # Verify that student is enrolled in the course
+        try:
+            user_email_address = request.user.email
+            student_is_enrolled = StudentsEnrolled.objects.filter(email_address=user_email_address, crn=crn, term=term).exists()
+            if student_is_enrolled is False:
+                return Response({"status": "error", "message": f"Not enrolled in course: crn={crn},  term={term}"}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            print({str(e)})
+            return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         try:
             courses = Courses.objects.filter(crn=crn, term=term).select_related("delivery_method_id", "survey_set_id")
             serializer = CoursesSerializer(courses, many=True)
