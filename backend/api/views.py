@@ -77,6 +77,16 @@ class StudentSubmitSurveyAnswerView(APIView):
         """
         # TODO: Function only available to students
 
+        # Verify that student is enrolled in the course
+        try:
+            user_email_address = request.user.email
+            student_is_enrolled = StudentsEnrolled.objects.filter(email_address=user_email_address, crn=crn, term=term).exists()
+            if student_is_enrolled is False:
+                return Response({"status": "error", "message": f"Not enrolled in course: crn={crn},  term={term}"}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            print({str(e)})
+            return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         try:
             course_details = request.data.get("course")
             answers_data = request.data.get("answers")
