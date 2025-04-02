@@ -152,7 +152,7 @@ function FacultyDesktop({ onLogout }) {
         <div className="faculty-left-column">
           <div className="faculty-left-panel">
             <div className="faculty-top-section">
-              <p>Welcome, Faculty Member</p>
+              <p>Welcome, Bobby Smith</p>
             </div>
             <div className="faculty-bottom-section">
               <h3 className="faculty-courses-header">Courses Taught</h3>

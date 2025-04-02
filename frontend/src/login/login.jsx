@@ -19,7 +19,9 @@ function Login({ onLoginSuccess }) {
     <div className="login-page">
       <div className="login-header">College of Engineering</div>
       <div className="login-container">
+      <a href="https://www.uaa.alaska.edu/" target="_blank" rel="noopener noreferrer">
         <img src={UAAlogo} alt="UAA Logo" className="login-logo" />
+      </a>
         <button className="login-button" onClick={() => onLoginSuccess('student')}>
           Student
         </button>

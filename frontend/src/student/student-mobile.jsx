@@ -10,8 +10,8 @@ function StudentMobile({ onLogout }) {
   ];
   const instructors = [
     "Bobby Smith",
-    "Molly Baker",
-    "John Carpenter"
+    "Bobby Smith",
+    "Bobby Smith"
   ];
   
   //default survey questions (placeholder)
