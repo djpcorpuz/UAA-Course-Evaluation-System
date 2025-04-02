@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import './student-mobile.css';
 
 function StudentMobile({ onLogout }) {
-  //default courses and instructors (placeholder)
   const courses = [
     "CRN 12345, CSCE A101 100, Introduction to Computer Science",
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
@@ -10,11 +9,10 @@ function StudentMobile({ onLogout }) {
   ];
   const instructors = [
     "Bobby Smith",
-    "Molly Baker",
-    "John Carpenter"
+    "Bobby Smith",
+    "Bobby Smith"
   ];
   
-  //default survey questions (placeholder)
   const defaultSurveyQuestions = [
     "Course syllabus and procedures (for example, expectations regarding attendance, participation, grading, etc.) were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",

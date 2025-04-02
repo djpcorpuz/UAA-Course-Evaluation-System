@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import './student-desktop.css';
 
 function StudentDesktop({ onLogout }) {
-  //default courses and instructors
   const courses = [
     "CRN 12345, CSCE A101 100, Introduction to Computer Science",
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
@@ -10,11 +9,10 @@ function StudentDesktop({ onLogout }) {
   ];
   const instructors = [
     "Bobby Smith",
-    "Molly Baker",
-    "John Carpenter"
+    "Bobby Smith",
+    "Bobby Smith"
   ];
 
-  //default survey questions (placeholder))
   const defaultQuestions = [
     "Course syllabus and procedures were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
@@ -69,7 +67,7 @@ function StudentDesktop({ onLogout }) {
       alert("Please answer all questions before submitting.");
       return;
     }
-    //save the submission for this course in localStorage (temporary until integration)
+    //save the submission for this course in localStorage (temporary)
     const submission = surveyQuestions.map((q, index) => surveyAnswers[index]);
     const key = `submittedSurvey_${selectedCourseIndex}`;
     let submissions = localStorage.getItem(key);
