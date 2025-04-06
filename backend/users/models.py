@@ -1,12 +1,11 @@
 # Create your models here.
-from email.policy import default
 import time
 from django.db import models
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
-# MyModel = Custom Permissions Table? Need to confirm
-class CourseEvaluations(models.Model):
+# Role-Based Permissions Table
+class RolePermission(models.Model):
     name = models.CharField(max_length = 100)                   # Name of custom permission
     description = models.TextField()                            # Description of custom permission
 
@@ -29,7 +28,7 @@ class CourseEvaluations(models.Model):
 class RoleSetup:
     @staticmethod
     def create_roles_and_permissions():
-        content_type = ContentType.objects.get_for_model(CourseEvaluations)
+        content_type = ContentType.objects.get_for_model(RolePermission)
 
         #Initializing permissions
         #-------------------------------------
@@ -57,17 +56,37 @@ class RoleSetup:
         #-------------------------------------
 
             # System Admin 
-        system_admin_permissions = [set_system_admin_perm, set_admin_perm, approve_perm, reject_perm, time_perm, faculty_perm, student_perm, default_perm]
+        system_admin_permissions = [
+            set_system_admin_perm, 
+            set_admin_perm, approve_perm, 
+            reject_perm, 
+            time_perm, 
+            faculty_perm, 
+            student_perm, 
+            default_perm
+            ]
         system_admin_group.permissions.set(system_admin_permissions)
 
             # Admin 
-        admin_permissions = [approve_perm, reject_perm, time_perm, faculty_perm, student_perm, default_perm]
+        admin_permissions = [
+            approve_perm, 
+            reject_perm, 
+            time_perm, 
+            faculty_perm, 
+            student_perm, 
+            default_perm
+            ]
         admin_group.permissions.set(admin_permissions)
 
             # Faculty
-        faculty_permissions = [records_perm, custom_perm]
+        faculty_permissions = [
+            records_perm, 
+            custom_perm
+            ]
         faculty_group.permissions.set(faculty_permissions)
 
             # Student
-        student_permissions = [answer_perm]
+        student_permissions = [
+            answer_perm
+            ]
         student_group.permissions.set(student_permissions)
