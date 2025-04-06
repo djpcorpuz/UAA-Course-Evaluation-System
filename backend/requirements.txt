@@ -6,3 +6,4 @@ djangorestframework
 dotenv
 mysqlclient
 requests
+gunicorn
