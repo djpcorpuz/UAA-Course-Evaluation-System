@@ -225,7 +225,7 @@ class FacultyManageQuestionsView(APIView):
         if fetched_course_data["survey_set_id_id"] == default_set_obj["set_id"]:
             new_survey_set = SurveySets(
                 # set_id is auto generated
-                name = f"{course_data["crn"]}, {course_data["term"]}",
+                name = f"{course_data['crn']}, {course_data['term']}",
                 question_ids = default_set_obj["question_ids"]
             )
             new_survey_set.save()
