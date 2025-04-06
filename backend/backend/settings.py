@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'uaa-course-evaluation-system-production-132c.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'uaa-course-evaluation-system-production-132c.up.railway.app']
 
 # Application definition
 
@@ -54,21 +54,14 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    "allauth.mfa",
+    "allauth.headless",
+    "allauth.usersessions",
 
     'rest_framework',
     'api',
     'users'
 ]
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email'
-        ],
-    'AUTH_PARAMS': {'access_type': 'online'}
-    }
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -161,6 +154,29 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend'
 )
+
+AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend",)
+
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
+ACCOUNT_LOGIN_BY_CODE_ENABLED = True
+ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = True
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+
+HEADLESS_ONLY = True
+HEADLESS_FRONTEND_URLS = {
+    "account_confirm_email": "/account/verify-email/{key}",
+    "account_reset_password": "/account/password/reset",
+    "account_reset_password_from_key": "/account/password/reset/key/{key}",
+    "account_signup": "/account/signup",
+    "socialaccount_login_error": "/account/provider/callback",
+}
+HEADLESS_SERVE_SPECIFICATION = True
+
+MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
+MFA_PASSKEY_LOGIN_ENABLED = True
+MFA_PASSKEY_SIGNUP_ENABLED = True
 
 # TODO: Update to correct frontend URL
 LOGIN_DIRECT_URL = '/'

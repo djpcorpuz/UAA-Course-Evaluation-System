@@ -7,3 +7,4 @@ dotenv
 mysqlclient
 requests
 gunicorn
+django-allauth[mfa,socialaccount]>=65.7.0
