@@ -17,7 +17,11 @@ class StudentEnrolledCourseView(APIView):
 
     def get(self, request):
         """Get all courses for the current authenticated user """
+
         # TODO: Function only available to students
+        if not request.user.has_perm('users.view_survey'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
         user_email_address = request.user.email
         enrolled_courses = self.get_queryset(user_email_address)
         serialized_courses = StudentsEnrolledSerializer(enrolled_courses, many=True)
@@ -35,7 +39,10 @@ class StudentSurveyQuestionsView(APIView):
             crn (str): The specified course.
             term (str): The specified year.
         """
+
         # TODO: Function only available to students
+        if not request.user.has_perm('users.view_survey'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
         # Verify that student is enrolled in the course
         try:
@@ -75,13 +82,22 @@ class StudentSubmitSurveyAnswerView(APIView):
                     }
                 }
         """
+
         # TODO: Function only available to students
+        if not request.user.has_perm('users.submit_answer'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             course_details = request.data.get("course")
             answers_data = request.data.get("answers")
             crn = course_details.get("crn")
             term = course_details.get("term")
+
+            #Validates that student is enrolled in the course
+            is_enrolled = StudentsEnrolled.objects.filter(email_address=request.user.email, crn=crn, term=term).exists()
+
+            if not is_enrolled:
+                return Response({"status": "error", "message": "Not enrolled in the specified course"},status=status.HTTP_403_FORBIDDEN)
 
             # Loop through the data
             course_answers = []
@@ -99,7 +115,7 @@ class StudentSubmitSurveyAnswerView(APIView):
                 course_answers.append(course_answer)
 
             CourseAnswers.objects.bulk_create(course_answers)
-            return Response({"status: success"}, status=status.HTTP_201_CREATED)
+            return Response({"status": "success"}, status=status.HTTP_201_CREATED)
         except Exception as e:
             print({str(e)})
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -115,7 +131,10 @@ class FacultyAvailableCoursesView(APIView):
 
     def get(self, request):
         """Get all courses for the current authenticated user"""
+        
         # TODO: Function only available to faculty
+        if not request.user.has_perm('users.view_records'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             # Get associated courses
@@ -158,6 +177,8 @@ class FacultyViewAnswersView(APIView):
                 }
         """
         # TODO: Function only available to faculty
+        if not request.user.has_perm('users.view_records'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             course_details = request.data.get("course")
@@ -212,6 +233,8 @@ class FacultyManageQuestionsView(APIView):
                 }
         """
         # TODO: Function only available to faculty
+        if not request.user.has_perm('users.edit_custom'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
         course_data = request.data.get("course", {})
         question_changes = request.data.get("questions", {})
@@ -292,7 +315,11 @@ class AdminCreateCoursesView(APIView):
         """
         Fetch all the courses
         """
+
         # TODO: Function only available to admin
+        if not request.user.has_perm('users.create_course'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
         courses = Courses.objects.all() # TODO: Update to allow for filters and pagination
         serialized_courses = CoursesSerializer(courses, many=True)
         return Response(serialized_courses.data, status=status.HTTP_200_OK)
@@ -320,7 +347,11 @@ class AdminManageSurvey(APIView):
                     "lock-by": "2025-03-14T07:00:00+00:00"
                 }
         """
+
         # TODO: Function only available to admin
+        if not request.user.has_perm('users.set_timelock'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
         type = request.data.get("type", None)
         course = request.data.get("course", {})
 
