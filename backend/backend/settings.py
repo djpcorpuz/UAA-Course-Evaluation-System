@@ -66,7 +66,11 @@ SOCIALACCOUNT_PROVIDERS = {
             'profile',
             'email'
         ],
-    'AUTH_PARAMS': {'access_type': 'online'}
+    'AUTH_PARAMS': {'access_type': 'online'},
+    'APP': {
+            'client_id': os.getenv('GOOGLE_OAUTH2_CLIENT_ID'),
+            'secret': os.getenv('GOOGLE_OAUTH2_CLIENT_SECRET'),
+        }
     }
 }
 
@@ -163,5 +167,5 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # TODO: Update to correct frontend URL
-LOGIN_DIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

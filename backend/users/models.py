@@ -64,7 +64,7 @@ class RoleSetup:
             set_system_admin_perm, 
             set_admin_perm, approve_perm, 
             reject_perm, 
-            course_perm
+            course_perm,
             time_perm, 
             faculty_perm, 
             student_perm, 
