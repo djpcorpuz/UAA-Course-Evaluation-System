@@ -13,11 +13,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
+from corsheaders.defaults import default_headers
 
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -46,16 +49,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # https://github.com/djpcorpuz/UAA-Course-Evaluation-System/pull/15 (Issue #2)
-    # 'accounts',
-    # 'django.contrib.auth.models',
-
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 
     'rest_framework',
+    'rest_framework.authtoken',
+
+    'corsheaders',
+
     'api',
     'users'
 ]
@@ -79,6 +82,7 @@ SOCIALACCOUNT_STORE_TOKENS = True
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -140,6 +144,33 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 5
+}
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "X-Google-Access-Token",
+]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=60),
+}
+
+# CORS_ORIGIN_ALLOW_ALL = True - # FOR DEV PURPOSE ONLY 
+
+CORS_ALLOWS_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'https://localhost:8000',  # Frontend URL PRD
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -169,5 +200,5 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # TODO: Update to correct frontend URL
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/callback/'
 LOGOUT_REDIRECT_URL = '/'
