@@ -6,9 +6,20 @@ import StudentMobile from './student/student-mobile.jsx';
 import FacultyDesktop from './faculty/faculty-desktop.jsx';
 import AdminDesktop from './admin/admin-desktop.jsx';
 import './index.css';
+import { useAuthentication } from './auth.js';
+import RedirectGoogleAuth from './components/GoogleRedirectHandler.jsx';
 
 function App() {
   const [role, setRole] = useState(null);
+
+  const {isAuthorized} = useAuthentication();
+  const ProtectedLogin = () => {
+    return isAuthorized ? <Navigate to='/' /> : <AuthPage initialMethod='login' />
+  }
+
+  const Protectedregister = () => {
+    return isAuthorized ? <Navigate to='/' /> : <AuthPage initialMethod='register' />
+  }
 
   const handleLoginSuccess = (selectedRole) => {
     setRole(selectedRole);

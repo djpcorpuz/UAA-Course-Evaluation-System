@@ -1,2 +1,2 @@
 axios jwt-decode
-react-reouter-dom
+react-router-dom
