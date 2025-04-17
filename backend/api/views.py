@@ -82,7 +82,11 @@ class StudentEnrolledCourseView(APIView):
 
     def get(self, request):
         """Get all courses for the current authenticated user """
+
         # TODO: Function only available to students
+        if not request.user.has_perm('users.view_survey'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        
         user_email_address = request.user.email
         enrolled_courses = self.get_queryset(user_email_address)
         serialized_courses = StudentsEnrolledSerializer(enrolled_courses, many=True)
@@ -101,7 +105,9 @@ class StudentSurveyQuestionsView(APIView):
             term (str): The specified year.
         """
         # TODO: Function only available to students
-
+        if not request.user.has_perm('users.view_survey'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        
         # Verify that student is enrolled in the course
         try:
             user_email_address = request.user.email
@@ -140,8 +146,11 @@ class StudentSubmitSurveyAnswerView(APIView):
                     }
                 }
         """
-        # TODO: Function only available to students
 
+        # TODO: Function only available to students
+        if not request.user.has_perm('users.submit_answer'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        
         try:
             course_details = request.data.get("course")
             answers_data = request.data.get("answers")
@@ -180,7 +189,10 @@ class FacultyAvailableCoursesView(APIView):
 
     def get(self, request):
         """Get all courses for the current authenticated user"""
+
         # TODO: Function only available to faculty
+        if not request.user.has_perm('users.view_records'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             # Get associated courses
@@ -223,6 +235,8 @@ class FacultyViewAnswersView(APIView):
                 }
         """
         # TODO: Function only available to faculty
+        if not request.user.has_perm('users.view_records'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             course_details = request.data.get("course")
@@ -277,6 +291,8 @@ class FacultyManageQuestionsView(APIView):
                 }
         """
         # TODO: Function only available to faculty
+        if not request.user.has_perm('users.edit_custom'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
         course_data = request.data.get("course", {})
         question_changes = request.data.get("questions", {})
@@ -358,6 +374,9 @@ class AdminCreateCoursesView(APIView):
         Fetch all the courses
         """
         # TODO: Function only available to admin
+        if not request.user.has_perm('users.create_course'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
         courses = Courses.objects.all() # TODO: Update to allow for filters and pagination
         serialized_courses = CoursesSerializer(courses, many=True)
         return Response(serialized_courses.data, status=status.HTTP_200_OK)
@@ -386,6 +405,9 @@ class AdminManageSurvey(APIView):
                 }
         """
         # TODO: Function only available to admin
+        if not request.user.has_perm('users.set_timelock'):
+            return Response({"status": "error", "message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
         type = request.data.get("type", None)
         course = request.data.get("course", {})
 

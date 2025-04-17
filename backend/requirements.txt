@@ -8,3 +8,4 @@ mysqlclient
 requests
 gunicorn
 django-cors-headers
+djangorestframework-simplejwt
