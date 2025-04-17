@@ -1,1 +1,3 @@
-placeholder
+axios
+jwt-decode
+react-router-dom

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 
 load_dotenv()
 
@@ -29,7 +30,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'uaa-course-evaluation-system-production-132c.up.railway.app']
+ALLOWED_HOSTS = ['localhost', 'uaa-course-evaluation-system-production-132c.up.railway.app', '127.0.0.1']
 
 # Application definition
 
@@ -46,9 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # https://github.com/djpcorpuz/UAA-Course-Evaluation-System/pull/15 (Issue #2)
-    # 'accounts',
-    # 'django.contrib.auth.models',
+    'corsheaders',
 
     'allauth',
     'allauth.account',
@@ -56,6 +55,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     'rest_framework',
+    'rest_framework.authtoken',
+
     'api',
     'users'
 ]
@@ -66,13 +67,18 @@ SOCIALACCOUNT_PROVIDERS = {
             'profile',
             'email'
         ],
-    'AUTH_PARAMS': {'access_type': 'online'}
+    'AUTH_PARAMS': {'access_type': 'online'},
+    'OAUTH_PKCE_ENABLED': True,
+    'FETCH_USERINFO': True,
     }
 }
+
+SOCIALACCOUNT_STORE_TOKENS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -134,6 +140,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 5
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=60),
+}
+
+# CORS_ORIGIN_ALLOW_ALL = True - # FOR DEV PURPOSE ONLY 
+
+CORS_ALLOWS_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'https://uaa-course-evaluation-system-production-132c.up.railway.app',  # Frontend URL PRD: TO DO 
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -163,5 +192,5 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # TODO: Update to correct frontend URL
-LOGIN_DIRECT_URL = '/'
+LOGIN_DIRECT_URL = '/callback/'
 LOGOUT_REDIRECT_URL = '/'

@@ -7,3 +7,4 @@ dotenv
 mysqlclient
 requests
 gunicorn
+django-cors-headers
