@@ -36,7 +36,7 @@ ALLOWED_HOSTS = ['localhost', 'uaa-course-evaluation-system-production-132c.up.r
 
 # Multiple sites exist within Django project
 # Need to select the correct site id within django_site
-SITE_ID = 2
+SITE_ID = 6
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -67,6 +67,10 @@ SOCIALACCOUNT_PROVIDERS = {
             'profile',
             'email'
         ],
+        'APP': {
+            'client_id': os.getenv('GOOGLE_OAUTH2_CLIENT_ID'),
+            'secret': os.getenv('GOOGLE_OAUTH2_CLIENT_SECRET'),
+        },
     'AUTH_PARAMS': {'access_type': 'online'},
     'OAUTH_PKCE_ENABLED': True,
     'FETCH_USERINFO': True,
@@ -156,12 +160,15 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=60),
 }
 
-# CORS_ORIGIN_ALLOW_ALL = True - # FOR DEV PURPOSE ONLY 
+CORS_ORIGIN_ALLOW_ALL = True # FOR DEV PURPOSE ONLY 
 
 CORS_ALLOWS_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    'https://uaa-course-evaluation-system-production-132c.up.railway.app',  # Frontend URL PRD: TO DO 
+    'https://uaa-course-evaluation-system-production-132c.up.railway.app',  # Frontend URL PRD: TO DO
+    'http://localhost:8000',
+    'http://localhost:5173',
+    'https://s1.npass.app',
 ]
 
 # Internationalization
@@ -192,5 +199,5 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # TODO: Update to correct frontend URL
-LOGIN_DIRECT_URL = '/callback/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_DIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/callback/'

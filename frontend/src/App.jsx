@@ -5,7 +5,7 @@ import StudentDesktop from './components/student-desktop.jsx';
 import StudentMobile from './components/student-mobile.jsx';
 import FacultyDesktop from './components/faculty-desktop.jsx';
 import AdminDesktop from './components/admin-desktop.jsx';
-import './index.css';
+import '/index.css';
 import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom';
 import Navbar from './components/Navbar';
 import NotFound from './pages/NotFound.jsx';
@@ -15,6 +15,7 @@ import { useAuthentication } from './auth.js';
 
 function App() {
 
+  /*
   const [role, setRole] = useState(null);
 
   const handleLoginSuccess = (selectedRole) => {
@@ -43,7 +44,7 @@ function App() {
   } else if (role === 'admin') {
     return <AdminDesktop onLogout={handleLogout} />;
   }
-
+*/
 
   const {isAuthorized} = useAuthentication();
   const ProtectedLogin = () => {
@@ -57,7 +58,6 @@ function App() {
     <div>
       <BrowserRouter>
         <Navbar />
-        <ToastContainer />  {/* To display notifications */}
         <Routes>
           <Route path="/login" element={<ProtectedLogin />} />
           <Route path="/register" element={<ProtectedRegister />} />

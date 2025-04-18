@@ -20,20 +20,18 @@ const AuthForm = ({ route, method }) => {
         setSuccess(null);
 
         try {
+            const res = await api.post(route, {username, password});
+
             if (method === "login") {
-                // Use the login method from AuthContext
-                const success = await login({ username, password });
-                
-                if (success) {
-                    navigate("/dashboard", { replace: true });
-                } else {
-                    setError("Login failed. Please check your credentials.");
-                }
+                localStorage.setItem(ACCESS_TOKEN, res.data.access);
+                localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+                navigate('/');
+                window.location.reload();
             } else {
-                // Registration logic
-                const res = await api.post(route, { username, password });
-                setSuccess("Registration successful. Please login.");
-                setTimeout(() => navigate("/login", { replace: true }), 2000);
+                setSuccess("Registration successful! You can now log in.");
+                setTimeout(() => {
+                    navigate("/login");
+                }, 2000)
             }
         } catch (error) {
             console.error(error);
@@ -58,8 +56,7 @@ const AuthForm = ({ route, method }) => {
     const handleGoogleLogin = () => {
         window.location.href = "http://localhost:8000/accounts/google/login/";
     };
-
-    /*
+/*
     useEffect(() => {
         const handleGoogleCallback = async () => {
             // Check if we are on the callback page
@@ -81,7 +78,6 @@ const AuthForm = ({ route, method }) => {
         handleGoogleCallback();
     }, [navigate, login]);
     */
-
     return (
         <div className="form-container">
             {loading && (

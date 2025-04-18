@@ -2,38 +2,26 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import logo from '../assets/UAAlogo.svg';
 import '../styles/Navbar.css';
+import { useAuthentication } from '../auth';
 
 function Navbar() {
+
+    const {isAuthorized, logout} = useAuthentication
+
+    const handleLogout = () => {
+        logout();
+    }
 
     return (
         <div className="navbar">
             <Link to="/" className="navbar-logo-link">
                 <img src={logo} alt="Logo" className="navbar-logo"/>
             </Link>
-            <ul className="navbar-menu-left">
-                <li>
-                    <Link to="/why">Why Us?</Link>
-                </li>
-                <li>
-                    <Link to="/about">About</Link>
-                </li>
-                <li>
-                    <Link to="/contact">Contact</Link>
-                </li>
-            </ul>
             <ul className="navbar-menu-right">
                 {isAuthorized ? (
                     <>
-                        <li className="dashboard-icon">
-                            <Link to="/dashboard">DB</Link>
-                        </li>
-                        <li className="cart-icon">
-                            <Link to="/cart">
-                                <span className="cart-count">{cart.length}</span>
-                            </Link>
-                        </li>
                         <li>
-                            <button onClick={handleLogout} className="button-link">Logout</button>
+                            <button onClick={handleLogout} to='/logout' className="button-link">Logout</button>
                         </li>
                     </>
                 ) : (
@@ -46,8 +34,6 @@ function Navbar() {
                         </li>
                     </>
                 )}
-                
-               
             </ul>
         </div>
     );
