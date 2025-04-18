@@ -56,7 +56,7 @@
 
 
 .button-link {
-    background-color: #3D56FF;
+    background-color: #14573e;
     color: white !important;
     border: none;
     padding: 8px 15px;
@@ -66,7 +66,7 @@
 }
 
 .button-link-login {
-    color: #3D56FF;
+    color: #14573e;
     font-weight: 700;
     cursor: pointer;
     text-decoration: none; /* Remove underline */
@@ -74,7 +74,7 @@
 
 .button-link:hover,
 .button-link:focus {
-    background-color: #2C44CC;
+    background-color: #14573e;
     color: white;
 }
 
@@ -82,7 +82,7 @@
 .dashboard-icon {
     width: 40px;  /* Adjust size as needed */
     height: 40px; /* Adjust size as needed */
-    background-color: #3D56FF; /* Example background color */
+    background-color: #14573e; /* Example background color */
     display: flex;
     align-items: center;
     justify-content: center;

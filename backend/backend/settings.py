@@ -36,7 +36,7 @@ ALLOWED_HOSTS = ['localhost', 'uaa-course-evaluation-system-production-132c.up.r
 
 # Multiple sites exist within Django project
 # Need to select the correct site id within django_site
-SITE_ID = 6
+SITE_ID = 2
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -60,6 +60,9 @@ INSTALLED_APPS = [
     'api',
     'users'
 ]
+
+GOOGLE_ACCESS_TOKEN_OBTAIN_URL = 'https://oauth2.googleapis.com/token'
+GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -160,7 +163,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=60),
 }
 
-CORS_ORIGIN_ALLOW_ALL = True # FOR DEV PURPOSE ONLY 
+#CORS_ORIGIN_ALLOW_ALL = True # FOR DEV PURPOSE ONLY 
 
 CORS_ALLOWS_CREDENTIALS = True
 
