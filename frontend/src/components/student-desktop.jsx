@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './student-desktop.css';
+import '../styles/student-desktop.css';
 
 function StudentDesktop({ onLogout }) {
   const courses = [

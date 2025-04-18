@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './student-mobile.css';
+import '../styles/student-mobile.css';
 
 function StudentMobile({ onLogout }) {
   const courses = [

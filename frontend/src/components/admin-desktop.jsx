@@ -1,5 +1,5 @@
 import React from 'react';
-import './admin-desktop.css';
+import '../styles/admin-desktop.css';
 
 function AdminDesktop({ onLogout }) {
   return (

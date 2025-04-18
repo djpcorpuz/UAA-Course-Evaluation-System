@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './login.css';
+import '../styles/login.css';
 import UAAlogo from '../assets/UAAlogo.svg';
 
 function Login({ onLoginSuccess }) {

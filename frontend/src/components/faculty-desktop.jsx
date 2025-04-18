@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './faculty-desktop.css';
+import '../styles/faculty-desktop.css';
 
 function FacultyDesktop({ onLogout }) {
   const faculty_courses = [
