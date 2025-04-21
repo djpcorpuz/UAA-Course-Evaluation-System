@@ -77,6 +77,7 @@ SOCIALACCOUNT_PROVIDERS = {
     'AUTH_PARAMS': {'access_type': 'online'},
     'OAUTH_PKCE_ENABLED': True,
     'FETCH_USERINFO': True,
+    'REDIRECT_URI': 'http://localhost:8000/api/auth/google/callback/',  # Make sure this matches
     }
 }
 
@@ -91,7 +92,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware'
+    'allauth.account.middleware.AccountMiddleware',
+    'api.middleware.JWTAuthMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'

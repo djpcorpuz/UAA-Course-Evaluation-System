@@ -1,80 +1,39 @@
-from rest_framework import status, generics
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import permissions
 from django.utils.dateparse import parse_datetime
-from django.shortcuts import redirect
-from django.http import JsonResponse
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User 
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from allauth.socialaccount.models import SocialToken, SocialAccount
 from .serializers import StudentsEnrolledSerializer, CourseAnswersSerializer, CoursesSerializer, InstructorsOfCoursesSerializer, UserSerializer
 from .models import StudentsEnrolled, CourseAnswers, SurveyQuestions, Courses, InstructorsOfCourses, SurveySets
-import json
+from .services import google_get_access_token, google_get_user_info, create_user_and_token
 
-# Google Authentication
-
-User = get_user_model()
-
-class UserCreate(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [AllowAny]
-
-class UserDetailView(generics.RetrieveUpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
-
-@login_required
-def google_login_callback(request):
-    user = request.user
-
-    social_accounts = SocialAccount.objects.filter(user=user)
-    print("Social Account for user:", social_accounts)
-
-    social_account = social_accounts.first()
-
-    if not social_account:
-        print("No social account for user:", user)
-        return redirect('http://localhost:5173/login/callback/?error=NoSocialAccount')
+##### Google OAuth #####
     
-    token = SocialToken.objects.filter(account=social_account, account__provider='google').first()
+class GoogleLoginCallbackView(APIView):
+    def get(self, request):
+        code = request.GET.get('code')
+        error = request.GET.get('error')
 
-    if token:
-        print('Google token found:', token.token)
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
-        return redirect(f'http://localhost:5173/login/callback/?access_token={access_token}')
-    else:
-        print('No Google token found for user', user)
-        return redirect(f'http://localhost:5173/login/callback/?error=NoGoogleToken')
+        if error or not code:
+            return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
 
-@csrf_exempt
-def validate_google_token(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            google_access_token = data.get('access_token')
-            print(google_access_token)
+        domain = request.META['HTTP_HOST']
+        redirect_uri = f'http://localhost:8000/api/auth/google/callback/'
 
-            if not google_access_token:
-                return JsonResponse({'detail': 'Access Token is missing.'}, status=400)
-            return JsonResponse({'valid': True})
-        except json.JSONDecodeError:
-            return JsonResponse({'detail': 'Invalid JSON.'}, status=400)
-    return JsonResponse({'detail': 'Method not allowed.'}, status=405)
+        access_token = google_get_access_token(code=code, redirect_uri=redirect_uri)
+        user_data = google_get_user_info(access_token=access_token)
+
+        # Create new user or authenticate existing user here
+        # Generate JWT token with user info
+        token_data = create_user_and_token(user_data)
+
+        return Response({'user_data': user_data})
+    
 
 ##### Student View #####
 
 class StudentEnrolledCourseView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, user_email):
         """Returns filtered enrolled courses"""
@@ -93,7 +52,7 @@ class StudentEnrolledCourseView(APIView):
         return Response(serialized_courses.data)
 
 class StudentSurveyQuestionsView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, crn, term):
         """
@@ -127,7 +86,7 @@ class StudentSurveyQuestionsView(APIView):
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class StudentSubmitSurveyAnswerView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         """
@@ -181,7 +140,7 @@ class StudentSubmitSurveyAnswerView(APIView):
 ##### Faculty View #####
 
 class FacultyAvailableCoursesView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, user_email):
         """Returns filtered taught courses"""
@@ -219,7 +178,7 @@ class FacultyAvailableCoursesView(APIView):
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FacultyViewAnswersView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         """
@@ -253,7 +212,7 @@ class FacultyViewAnswersView(APIView):
             return Response({"status": "error", "message": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FacultyManageQuestionsView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         """
@@ -367,7 +326,7 @@ class FacultyManageQuestionsView(APIView):
 ##### Admin View #####
 
 class AdminCreateCoursesView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request):
         """
@@ -386,7 +345,7 @@ class AdminCreateCoursesView(APIView):
     #     pass
 
 class AdminManageSurvey(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         """

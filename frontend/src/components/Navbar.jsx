@@ -29,9 +29,6 @@ function Navbar() {
                         <li>
                             <Link to="/login" className="button-link-login">Log In</Link>
                         </li>
-                        <li>
-                            <Link to="/register" className="button-link">Register</Link>
-                        </li>
                     </>
                 )}
             </ul>
