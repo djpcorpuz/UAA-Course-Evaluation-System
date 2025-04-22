@@ -15,8 +15,8 @@ class GoogleLoginCallbackView(APIView):
         if error or not code:
             return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
 
-        domain = request.META['HTTP_HOST']
-        redirect_uri = f'http://{domain}/api/google-login-callback/'
+        #domain = request.META['HTTP_HOST']
+        redirect_uri = f'http://localhost:8000/api/google-login-callback/'
 
         access_token = google_get_access_token(code=code, redirect_uri=redirect_uri)
         user_data = google_get_user_info(access_token=access_token)

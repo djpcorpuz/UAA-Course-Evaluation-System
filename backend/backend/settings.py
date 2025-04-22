@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'uaa-course-evaluation-system-production-132c.up.railway.app']
+ALLOWED_HOSTS = ['localhost', 'uaa-course-evaluation-system-production-132c.up.railway.app', '127.0.0.1']
 
 # Application definition
 

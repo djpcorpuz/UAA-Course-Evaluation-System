@@ -1,7 +1,8 @@
 import React from 'react';
-import { GoogleLogin } from 'react-google-login';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
+
   const onSuccess = (res) => {
     // Handle successful login
     console.log('Login success:', res);
@@ -14,10 +15,9 @@ const Login = () => {
 
   return (
     <GoogleLogin 
-      clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
       buttonText="Sign in with Google"
-      onSuccess={onSuccess}
-      onFailure={onFailure}
+      onSuccess={(res) => console.log('Login success:', res)}
+      onError={(error) => console.log('Login failed:', error)}
       cookiePolicy={'single_host_origin'}
     />
   );
