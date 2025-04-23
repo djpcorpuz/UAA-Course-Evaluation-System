@@ -1,6 +1,7 @@
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
+import './GoogleLogin.css';
 
 const Login = () => {
 const navigate = useNavigate();
@@ -9,7 +10,7 @@ const navigate = useNavigate();
     // Handle successful login
     //console.log('Login success:', res);
     //navigate('/demo');
-    window.location.href = '/demo';
+    navigate('/demo');
   };
 
   const onFailure = (res) => {
@@ -18,12 +19,19 @@ const navigate = useNavigate();
   };
 
   return (
-    <GoogleLogin 
-      buttonText="Sign in with Google"
-      onSuccess={onSuccess}
-      onError={(error) => console.log('Login failed:', error)}
-      cookiePolicy={'single_host_origin'}
-    />
+    <div className="google-login-page">
+      <div className="google-login-card">
+        <h1 className="google-login-title">CoEng Course Evaluation Surveys(DEMO)</h1>
+        <div className="google-login-button-wrapper">
+          <GoogleLogin
+            buttonText="Sign in with Google"
+            onSuccess={onSuccess}
+            onError={onFailure}
+            cookiePolicy="single_host_origin"
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './login.css';
+import './demopage.css';
 import UAAlogo from '../assets/UAAlogo.svg';
 
 function Login({ onLoginSuccess }) {
@@ -17,7 +17,6 @@ function Login({ onLoginSuccess }) {
 
   return (
     <div className="login-page">
-      <div className="login-header">College of Engineering (DEMO)</div>
       <div className="login-container">
       <a href="https://www.uaa.alaska.edu/" target="_blank" rel="noopener noreferrer">
         <img src={UAAlogo} alt="UAA Logo" className="login-logo" />

@@ -1,6 +1,6 @@
 .login-page {
   width: 400px;
-  min-height: 550px;
+  min-height: 350px;
   margin: 0 auto;
   margin-top: 2rem;
   
@@ -11,15 +11,6 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-}
-
-.login-header {
-  grid-row: 1;
-  align-self: center;
-  text-align: center;
-  font-size: 2.5rem;
-  color: #000;
-  padding-bottom: 20px;
 }
 
 .login-container {

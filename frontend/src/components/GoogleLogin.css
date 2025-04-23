@@ -1,0 +1,33 @@
+.google-login-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #14573e;
+    margin: 0;
+  }
+  
+  .google-login-card {
+    background-color: #f0f2f5;
+    width: 400px;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .google-login-title {
+    font-size: 2.5rem;
+    color: #000;
+    margin-bottom: 1.5rem;
+  }
+  
+  .google-login-button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .google-login-button-wrapper > div {
+    margin: 0;
+  }
+  
