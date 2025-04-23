@@ -85,20 +85,22 @@ body {
 /* Right Panel Wrapper */
 .faculty-right-panel {
   flex: 1;
-  padding-right: 10px;
-  padding-top: 10px;
-  box-sizing: border-box;
+  text-align: left;
+  color: #fff;
+  height: 100%;
 }
 
 /* --- EDIT PANEL (fixed header + scroll) --- */
 .faculty-survey-panel {
-  background-color: #fff;
-  border-radius: 8px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 45vw;
-  box-sizing: border-box;
+  background-color: #fff;       /* white card background */
+  color: #000;                  /* ensure text is black */
+  border-radius: 8px;           /* rounded corners */
+  width: 99%;                   /* same width behaviour as student panel */
+  margin-top: 10px;             /* match the spacing under the header row */
+  position: relative;           /* so its header can sit on top */
+  height: 45vw;                 /* same height formula */
+  display: flex;                
+  flex-direction: column;       /* stack header/content vertically */
 }
 
 .faculty-survey-header {
@@ -197,6 +199,10 @@ body {
   flex-direction: row;
   overflow-x: auto;
   height: 45vw;
+  cursor: grab;
+}
+.faculty-survey-container.active {
+  cursor: grabbing;
 }
 
 .faculty-default-panel {
@@ -231,8 +237,9 @@ body {
   border-radius: 8px;
   margin: 10px;
   text-align: left;
-  width: 400px;
-  height: 35vw;
+  width: 432px;
+  max-width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
@@ -243,6 +250,8 @@ body {
   background-color: #ddd;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  text-align: center;
+
 }
 
 .submitted-answers-scroll {

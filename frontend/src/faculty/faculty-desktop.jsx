@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './faculty-desktop.css';
 
 export default function FacultyDesktop({ onLogout }) {
@@ -27,6 +27,12 @@ export default function FacultyDesktop({ onLogout }) {
   const [openSubmittedAnswersCourse, setOpenSubmittedAnswersCourse] = useState(null);
   const [submissionQuestions, setSubmissionQuestions] = useState([]);
   const [expandedSubmissions, setExpandedSubmissions] = useState({});
+
+  // **NEW: horizontal drag support**
+  const surveyContainerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const getSurveyKey    = idx => `surveyQuestions_${idx}`;
   const getSubmittedKey = idx => `submittedSurvey_${idx}`;
@@ -182,7 +188,24 @@ export default function FacultyDesktop({ onLogout }) {
             </div>
           ) : (
             /* View‐submitted‐surveys panel, restored to white‐card look */
-            <div className="faculty-survey-container">
+            <div
+              className={`faculty-survey-container${isDragging ? ' active' : ''}`}
+              ref={surveyContainerRef}
+              onMouseDown={e => {
+                setIsDragging(true);
+                setStartX(e.pageX - surveyContainerRef.current.offsetLeft);
+                setScrollLeft(surveyContainerRef.current.scrollLeft);
+              }}
+              onMouseLeave={() => setIsDragging(false)}
+              onMouseUp={() => setIsDragging(false)}
+              onMouseMove={e => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - surveyContainerRef.current.offsetLeft;
+                const walk = x - startX;
+                surveyContainerRef.current.scrollLeft = scrollLeft - walk;
+              }}
+            >
               {faculty_courses.map((course, idx) => (
                 <div key={idx}>
                   <div className="faculty-default-panel">
@@ -191,7 +214,7 @@ export default function FacultyDesktop({ onLogout }) {
                       <button
                         className="survey-answers-button"
                         onClick={() =>
-                          setOpenSubmittedAnswersCourse(prev => prev === idx ? null : idx)
+                          setOpenSubmittedAnswersCourse(prev => (prev === idx ? null : idx))
                         }
                       >
                         {openSubmittedAnswersCourse === idx
@@ -204,7 +227,10 @@ export default function FacultyDesktop({ onLogout }) {
                   {openSubmittedAnswersCourse === idx && submittedSurveys[idx] && (
                     <div className="submitted-answers-panel">
                       <h3>Submissions for {course}</h3>
-                      <div className="submitted-answers-scroll">
+                      <div
+                        className="submitted-answers-scroll"
+                        onWheel={e => e.stopPropagation()}
+                      >
                         {submittedSurveys[idx].map((submission, j) => (
                           <div key={j}>
                             <p
@@ -232,13 +258,11 @@ export default function FacultyDesktop({ onLogout }) {
                       </div>
                     </div>
                   )}
-
                 </div>
               ))}
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
