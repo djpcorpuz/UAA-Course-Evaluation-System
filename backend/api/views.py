@@ -5,6 +5,27 @@ from django.utils.dateparse import parse_datetime
 from rest_framework.permissions import IsAuthenticated
 from .serializers import StudentsEnrolledSerializer, CourseAnswersSerializer, CoursesSerializer, InstructorsOfCoursesSerializer
 from .models import StudentsEnrolled, CourseAnswers, SurveyQuestions, Courses, InstructorsOfCourses, SurveySets
+from .services import google_get_access_token, google_get_user_info, create_user_and_token
+
+class GoogleLoginCallbackView(APIView):
+    def get(self, request):
+        code = request.GET.get('code')
+        error = request.GET.get('error')
+
+        if error or not code:
+            return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
+
+        domain = request.META['HTTP_HOST']
+        redirect_uri = f'http://{domain}/api/google-login-callback/'
+
+        access_token = google_get_access_token(code=code, redirect_uri=redirect_uri)
+        user_data = google_get_user_info(access_token=access_token)
+
+        # Create new user or authenticate existing user here
+        # Generate JWT token with user info
+        token_data = create_user_and_token(user_data)
+
+        return Response({'user_data': user_data})
 
 ##### Student View #####
 

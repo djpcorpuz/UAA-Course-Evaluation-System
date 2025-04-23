@@ -21,7 +21,7 @@ function App() {
   if (!role) {
     return <Login onLoginSuccess={handleLoginSuccess} />;
   } else if (role === 'student') {
-    return (
+  return (
       <>
         <MediaQuery maxWidth={767}>
           <StudentMobile onLogout={handleLogout} />
