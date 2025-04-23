@@ -1,11 +1,15 @@
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+const navigate = useNavigate();
 
   const onSuccess = (res) => {
     // Handle successful login
-    console.log('Login success:', res);
+    //console.log('Login success:', res);
+    //navigate('/demo');
+    window.location.href = '/demo';
   };
 
   const onFailure = (res) => {
@@ -16,7 +20,7 @@ const Login = () => {
   return (
     <GoogleLogin 
       buttonText="Sign in with Google"
-      onSuccess={(res) => console.log('Login success:', res)}
+      onSuccess={onSuccess}
       onError={(error) => console.log('Login failed:', error)}
       cookiePolicy={'single_host_origin'}
     />

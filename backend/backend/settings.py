@@ -46,10 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # https://github.com/djpcorpuz/UAA-Course-Evaluation-System/pull/15 (Issue #2)
-    # 'accounts',
-    # 'django.contrib.auth.models',
-
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -65,7 +61,7 @@ GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH2_CLIENT_SECRET')
 
 GOOGLE_ACCESS_TOKEN_OBTAIN_URL = 'https://oauth2.googleapis.com/token'
 GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
-REDIRECT_URI = 'http://localhost:8000/accounts/google/login/callback/'
+#REDIRECT_URI = 'http://localhost:8000/accounts/google/login/callback/'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

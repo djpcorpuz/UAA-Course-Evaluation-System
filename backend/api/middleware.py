@@ -3,11 +3,15 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
 from django.utils.functional import SimpleLazyObject
+from django.urls import resolve
 from rest_framework.request import Request
 
 User = get_user_model()
 
 def get_user_from_token(request):
+    if resolve(request.path_info).app_name == 'admin':
+        return AnonymousUser()
+
     token = request.META.get('HTTP_AUTHORIZATION', '').split(' ')[1]
 
     if not token:

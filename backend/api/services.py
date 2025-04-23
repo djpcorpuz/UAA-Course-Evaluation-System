@@ -10,7 +10,7 @@ def google_get_access_token(code: str, redirect_uri: str) -> str:
         'code': code,
         'client_id': settings.GOOGLE_OAUTH2_CLIENT_ID,
         'client_secret': settings.GOOGLE_OAUTH2_CLIENT_SECRET,
-        'redirect_uri': 'http://localhost:8000/accounts/google/login/callback/',
+        'redirect_uri': redirect_uri,
         'grant_type': 'authorization_code'
     }
 
