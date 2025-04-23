@@ -21,12 +21,12 @@ const navigate = useNavigate();
   return (
     <div className="google-login-page">
       <div className="google-login-card">
-        <h1 className="google-login-title">CoEng Course Evaluation Surveys(DEMO)</h1>
+        <h1 className="google-login-title">College of Engineering (DEMO)</h1>
         <div className="google-login-button-wrapper">
           <GoogleLogin
-            buttonText="Sign in with Google"
             onSuccess={onSuccess}
             onError={onFailure}
+            useOneTap={false}
             cookiePolicy="single_host_origin"
           />
         </div>

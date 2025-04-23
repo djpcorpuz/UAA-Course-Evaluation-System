@@ -1,18 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate
+} from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import Login         from './components/GoogleLogin.jsx';
 import App           from './App.jsx';
-import DemoStudent   from './student/DemoStudent.jsx'; //wrapper
+import DemoStudent   from './student/DemoStudent.jsx';
 import FacultyDesktop from './faculty/faculty-desktop.jsx';
 import AdminDesktop   from './admin/admin-desktop.jsx';
 import NotFoundPage   from './pages/NotFoundPage.jsx';
 
 import './index.css';
 
-const clientId = "224681179431-dhurfnids0aq71dardp93keva4ceopdj.apps.googleusercontent.com";
+const clientId = '224681179431-dhurfnids0aq71dardp93keva4ceopdj.apps.googleusercontent.com';
+
+function FacultyWrapper() {
+  const navigate = useNavigate();
+  return <FacultyDesktop onLogout={() => navigate('/')} />;
+}
+
+function AdminWrapper() {
+  const navigate = useNavigate();
+  return <AdminDesktop onLogout={() => navigate('/')} />;
+}
 
 const router = createBrowserRouter([
   {
@@ -30,11 +44,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/demo/faculty',
-    element: <FacultyDesktop />,
+    element: <FacultyWrapper />,
   },
   {
     path: '/demo/admin',
-    element: <AdminDesktop />,
+    element: <AdminWrapper />,
   },
   {
     path: '*',

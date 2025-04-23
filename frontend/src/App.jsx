@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
-import Login from './demopage/demopage.jsx';      // your 3-button page
+import Login from './demopage/demopage.jsx';
 import './index.css';
 
 function App() {
