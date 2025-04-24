@@ -7,35 +7,24 @@ function StudentMobile({ onLogout }) {
     "CRN 54321, CSCE A115 100, Introduction to Data Science",
     "CRN 77777, CSCE A201 100, Computer Programming I"
   ];
-  const instructors = [
-    "Bobby Smith",
-    "Bobby Smith",
-    "Bobby Smith"
-  ];
-  
+  const instructors = ["Bobby Smith","Bobby Smith","Bobby Smith"];
   const defaultSurveyQuestions = [
     "Course syllabus and procedures (for example, expectations regarding attendance, participation, grading, etc.) were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
     "Course activities (assignments, labs, group work, student presentations, etc.) were conducive to learning the material.",
     "Overall, you are satisfied with the course."
   ];
-  
   const answerOptions = [
-    "Strongly Disagree",
-    "Disagree",
-    "Neutral",
-    "Agree",
-    "Strongly Agree",
-    "N/A"
+    "Strongly Disagree","Disagree","Neutral","Agree","Strongly Agree","N/A"
   ];
 
-  //state for selected course, survey answers, and survey questions
+  const isSurveyLocked = JSON.parse(localStorage.getItem('surveylock')) || false;
+
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [surveyAnswers, setSurveyAnswers] = useState({});
   const [surveyQuestions, setSurveyQuestions] = useState(defaultSurveyQuestions);
   const surveyPanelRef = useRef(null);
 
-  //when a course is selected, load its survey questions from localStorage (temporary until integration)
   useEffect(() => {
     if (selectedCourseIndex !== null) {
       const key = `surveyQuestions_${selectedCourseIndex}`;
@@ -49,21 +38,18 @@ function StudentMobile({ onLogout }) {
     }
   }, [selectedCourseIndex]);
 
-  //detects storage changes if updated on desktop ()
   useEffect(() => {
-    const handleStorageChange = (event) => {
-      if (selectedCourseIndex !== null && event.key === `surveyQuestions_${selectedCourseIndex}`) {
-        const saved = localStorage.getItem(event.key);
+    const handler = e => {
+      if (selectedCourseIndex !== null && e.key === `surveyQuestions_${selectedCourseIndex}`) {
+        const saved = localStorage.getItem(e.key);
         if (saved) {
           const parsed = JSON.parse(saved);
           setSurveyQuestions(parsed.map(item => item.question));
         }
       }
     };
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
   }, [selectedCourseIndex]);
 
   useEffect(() => {
@@ -73,32 +59,26 @@ function StudentMobile({ onLogout }) {
     }
   }, [selectedCourseIndex]);
 
-  const handleClick = (index) => {
-    setSelectedCourseIndex(index);
+  const handleClick = (i) => {
+    if (isSurveyLocked) {
+      alert("Surveys are unavailable at this time.");
+      return;
+    }
+    setSelectedCourseIndex(i);
   };
-
-  const handleClose = () => {
-    setSelectedCourseIndex(null);
-  };
-
-  const handleAnswerChange = (questionIndex, value) => {
-    setSurveyAnswers(prev => ({ ...prev, [questionIndex]: value }));
-  };
-
+  const handleClose = () => setSelectedCourseIndex(null);
+  const handleAnswerChange = (i, val) =>
+    setSurveyAnswers(prev => ({ ...prev, [i]: val }));
   const handleSubmit = () => {
-    const allAnswered = surveyQuestions.every((_, index) => surveyAnswers[index]);
+    const allAnswered = surveyQuestions.every((_, i) => surveyAnswers[i]);
     if (!allAnswered) {
       alert("Please answer all questions before submitting.");
       return;
     }
-    //save the submission for this course in localStorage (temporary until integration)
-    const submission = surveyQuestions.map((q, index) => surveyAnswers[index]);
+    const submission = surveyQuestions.map((_, i) => surveyAnswers[i]);
     const key = `submittedSurvey_${selectedCourseIndex}`;
-    let submissions = localStorage.getItem(key);
-    submissions = submissions ? JSON.parse(submissions) : [];
-    submissions.push(submission);
-    localStorage.setItem(key, JSON.stringify(submissions));
-    
+    const prev = JSON.parse(localStorage.getItem(key)) || [];
+    localStorage.setItem(key, JSON.stringify([...prev, submission]));
     alert("Survey submitted!");
     setSurveyAnswers({});
     handleClose();
@@ -114,45 +94,63 @@ function StudentMobile({ onLogout }) {
         {selectedCourseIndex === null ? (
           <div className="mobile-course-list">
             <h3 className="mobile-courses-header">Courses Enrolled for this Term</h3>
-            {courses.map((course, index) => (
+            {courses.map((course, idx) => (
               <button
-                key={index}
+                key={idx}
                 className="mobile-course-button"
-                onClick={() => handleClick(index)}
+                onClick={() => handleClick(idx)}
               >
                 {course}
               </button>
             ))}
           </div>
         ) : (
-          <div key={selectedCourseIndex} ref={surveyPanelRef} className="mobile-survey-panel">
-            <span className="mobile-close-button" onClick={handleClose}>x</span>
-            <h2>Course Survey for</h2>
-            <p className="mobile-course-title">{courses[selectedCourseIndex]}</p>
-            <p className="mobile-instructor">Instructor: {instructors[selectedCourseIndex]}</p>
-            {surveyQuestions.map((question, index) => (
-              <div key={index} className="mobile-question-box">
-                <p>Question {index + 1}: {question}</p>
-                <div className="mobile-answer-options">
-                  {answerOptions.map((option, optionIndex) => (
-                    <label key={optionIndex}>
-                      <input
-                        type="radio"
-                        name={`question-${index}`}
-                        value={option}
-                        checked={surveyAnswers[index] === option}
-                        onChange={(e) => handleAnswerChange(index, e.target.value)}
-                      />
-                      {option}
-                    </label>
-                  ))}
+          <div
+            key={selectedCourseIndex}
+            ref={surveyPanelRef}
+            className="mobile-survey-panel"
+          >
+            {isSurveyLocked ? (
+              <>
+                <span className="mobile-close-button" onClick={handleClose}>×</span>
+                <h2>Surveys Locked</h2>
+                <p>Surveys are currently locked by the administrator and cannot be answered at this time.</p>
+              </>
+            ) : (
+              <>
+                <span className="mobile-close-button" onClick={handleClose}>×</span>
+                <h2>Course Survey for</h2>
+                <p className="mobile-course-title">
+                  {courses[selectedCourseIndex]}
+                </p>
+                <p className="mobile-instructor">
+                  Instructor: {instructors[selectedCourseIndex]}
+                </p>
+                {surveyQuestions.map((q, i) => (
+                  <div key={i} className="mobile-question-box">
+                    <p>Question {i + 1}: {q}</p>
+                    <div className="mobile-answer-options">
+                      {answerOptions.map((opt, oi) => (
+                        <label key={oi}>
+                          <input
+                            type="radio"
+                            name={`q-${i}`}
+                            value={opt}
+                            checked={surveyAnswers[i] === opt}
+                            onChange={e => handleAnswerChange(i, e.target.value)}
+                          />
+                          {opt}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <div className="mobile-survey-buttons">
+                  <button onClick={handleClose}>Cancel</button>
+                  <button onClick={handleSubmit}>Submit</button>
                 </div>
-              </div>
-            ))}
-            <div className="mobile-survey-buttons">
-              <button onClick={handleClose}>Cancel</button>
-              <button onClick={handleSubmit}>Submit</button>
-            </div>
+              </>
+            )}
           </div>
         )}
       </main>

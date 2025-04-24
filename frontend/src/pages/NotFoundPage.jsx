@@ -4,7 +4,7 @@ export default function NotFoundPage() {
   return (
   <div>
     404 Not Found
-    <Link to="/">Go back to home</Link>
+    <Link to="/">Go back to login</Link>
   </div>
   );
 }
