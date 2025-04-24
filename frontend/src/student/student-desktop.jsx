@@ -12,7 +12,6 @@ function StudentDesktop({ onLogout }) {
     "Bobby Smith",
     "Bobby Smith"
   ];
-
   const defaultQuestions = [
     "Course syllabus and procedures were clearly explained at the beginning of the term.",
     "The readings, lectures, and other course materials were relevant and useful.",
@@ -20,15 +19,13 @@ function StudentDesktop({ onLogout }) {
     "Overall, you are satisfied with the course."
   ];
 
-  //state to store the survey questions for the selected course
-  const [surveyQuestions, setSurveyQuestions] = useState(defaultQuestions);
+  const isSurveyLocked = JSON.parse(localStorage.getItem('surveylock')) || false;
 
-  //state for selected course and survey answers
+  const [surveyQuestions, setSurveyQuestions] = useState(defaultQuestions);
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [surveyAnswers, setSurveyAnswers] = useState({});
   const surveyPanelRef = useRef(null);
 
-  //when a course is selected, load its survey questions from localStorage (temporary)
   useEffect(() => {
     if (selectedCourseIndex !== null) {
       const key = `surveyQuestions_${selectedCourseIndex}`;
@@ -50,31 +47,28 @@ function StudentDesktop({ onLogout }) {
   }, [selectedCourseIndex]);
 
   const handleClick = (index) => {
+    if (isSurveyLocked) {
+      alert("Surveys are unavailable at this time.");
+      return;
+    }
     setSelectedCourseIndex(index);
   };
 
-  const handleClose = () => {
-    setSelectedCourseIndex(null);
-  };
+  const handleClose = () => setSelectedCourseIndex(null);
 
-  const handleAnswerChange = (questionIndex, value) => {
-    setSurveyAnswers(prev => ({ ...prev, [questionIndex]: value }));
-  };
+  const handleAnswerChange = (i, value) =>
+    setSurveyAnswers(prev => ({ ...prev, [i]: value }));
 
   const handleSubmit = () => {
-    const allAnswered = surveyQuestions.every((_, index) => surveyAnswers[index]);
+    const allAnswered = surveyQuestions.every((_, i) => surveyAnswers[i]);
     if (!allAnswered) {
       alert("Please answer all questions before submitting.");
       return;
     }
-    //save the submission for this course in localStorage (temporary)
-    const submission = surveyQuestions.map((q, index) => surveyAnswers[index]);
+    const submission = surveyQuestions.map((_, i) => surveyAnswers[i]);
     const key = `submittedSurvey_${selectedCourseIndex}`;
-    let submissions = localStorage.getItem(key);
-    submissions = submissions ? JSON.parse(submissions) : [];
-    submissions.push(submission);
-    localStorage.setItem(key, JSON.stringify(submissions));
-    
+    const prev = JSON.parse(localStorage.getItem(key)) || [];
+    localStorage.setItem(key, JSON.stringify([...prev, submission]));
     alert("Survey submitted!");
     setSurveyAnswers({});
     handleClose();
@@ -90,21 +84,20 @@ function StudentDesktop({ onLogout }) {
             </div>
             <div className="bottom-section">
               <h3 className="courses-header">Courses Enrolled for this Term</h3>
-              {courses.map((course, index) => (
+              {courses.map((course, idx) => (
                 <button
-                  key={index}
-                  className={`course ${selectedCourseIndex === index ? 'selected-course' : ''}`}
-                  onClick={() => handleClick(index)}
+                  key={idx}
+                  className={`course ${selectedCourseIndex === idx ? 'selected-course' : ''}`}
+                  onClick={() => handleClick(idx)}
                 >
                   {course}
                 </button>
               ))}
             </div>
           </div>
-          <button className="logout-button" onClick={onLogout}>
-            Logout
-          </button>
+          <button className="logout-button" onClick={onLogout}>Logout</button>
         </div>
+
         <div className="right-panel">
           {selectedCourseIndex !== null ? (
             <div key={selectedCourseIndex} ref={surveyPanelRef} className="survey-panel">
@@ -113,20 +106,23 @@ function StudentDesktop({ onLogout }) {
                 <p>Instructor: {instructors[selectedCourseIndex]}</p>
               </div>
               <div className="student-survey-content">
-                {surveyQuestions.map((question, index) => (
-                  <div key={index} className="question-box">
-                    <p>Question {index + 1}: {question}</p>
+                {surveyQuestions.map((q, i) => (
+                  <div key={i} className="question-box">
+                    <p>Question {i + 1}: {q}</p>
                     <div className="answer-options">
-                      {["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree", "N/A"].map((option, optionIndex) => (
-                        <label key={optionIndex}>
+                      {[
+                        "Strongly Disagree","Disagree","Neutral",
+                        "Agree","Strongly Agree","N/A"
+                      ].map((opt, oi) => (
+                        <label key={oi}>
                           <input
                             type="radio"
-                            name={`question-${index}`}
-                            value={option}
-                            checked={surveyAnswers[index] === option}
-                            onChange={(e) => handleAnswerChange(index, e.target.value)}
+                            name={`q-${i}`}
+                            value={opt}
+                            checked={surveyAnswers[i] === opt}
+                            onChange={e => handleAnswerChange(i, e.target.value)}
                           />
-                          {option}
+                          {opt}
                         </label>
                       ))}
                     </div>

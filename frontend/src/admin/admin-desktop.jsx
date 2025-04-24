@@ -4,16 +4,16 @@ import './admin-desktop.css';
 export default function AdminDesktop({ onLogout }) {
   const [toggles, setToggles] = useState(() => ({
     timelock: JSON.parse(localStorage.getItem('timelock')) || false,
-    featureB: false,
-    featureC: false,
+    surveylock: JSON.parse(localStorage.getItem('surveylock')) || false,
+    featureC: JSON.parse(localStorage.getItem('featureC')) || false,
   }));
 
   const handleToggle = (key) => {
     setToggles(prev => {
       const newVal = !prev[key];
       const updated = { ...prev, [key]: newVal };
-      if (key === 'timelock') {
-        localStorage.setItem('timelock', JSON.stringify(newVal));
+      if (['timelock', 'surveylock', 'featureC'].includes(key)) {
+        localStorage.setItem(key, JSON.stringify(newVal));
       }
       return updated;
     });
@@ -35,13 +35,13 @@ export default function AdminDesktop({ onLogout }) {
             </button>
           </div>
 
-          <div className={`toggle-item ${toggles.featureB ? 'toggle-on' : ''}`}>
-            <span className="toggle-label">Feature B</span>
+          <div className={`toggle-item ${toggles.surveylock ? 'toggle-on' : ''}`}>
+            <span className="toggle-label">Lock Surveys</span>
             <button
               className="toggle-button"
-              onClick={() => handleToggle('featureB')}
+              onClick={() => handleToggle('surveylock')}
             >
-              {toggles.featureB ? 'ON' : 'OFF'}
+              {toggles.surveylock ? 'ON' : 'OFF'}
             </button>
           </div>
 
