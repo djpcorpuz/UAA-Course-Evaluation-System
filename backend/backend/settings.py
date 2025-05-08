@@ -46,33 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-
     'rest_framework',
     'api',
     'users'
 ]
-
-GOOGLE_OAUTH2_CLIENT_ID = os.getenv('GOOGLE_OAUTH2_CLIENT_ID')
-GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH2_CLIENT_SECRET')
-
-GOOGLE_ACCESS_TOKEN_OBTAIN_URL = 'https://oauth2.googleapis.com/token'
-GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
-#REDIRECT_URI = 'http://localhost:8000/accounts/google/login/callback/'
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email'
-        ],
-    'AUTH_PARAMS': {'access_type': 'online'},
-    'REDIRECT_URI': 'http://localhost:8000/accounts/google/login/callback/',
-    }
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,8 +59,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
-    'api.middleware.JWTAuthMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -164,9 +139,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend'
 )
-
-# TODO: Update to correct frontend URL
-LOGIN_DIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
